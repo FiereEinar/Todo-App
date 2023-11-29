@@ -1,4 +1,4 @@
-
+import { pubsub } from "./pubsub";
 
 export class Todo {
     constructor(title, description, dueDate) {
@@ -13,15 +13,21 @@ export class Todo {
 export const todo = {
     todos: [],
 
-    init: () => {
-        pubsub.subscribe('todoAdded', todo.addTodo);
-    },
+    // init: () => {
+    //     pubsub.subscribe('todoAdded', todo.addTodo);
+    // },
 
-    createTodo: () => {
-        const newTodo = new Todo('work', 'do the work', 'feb',);
+    createTodo: (title, description, dueDate) => {
+        if (title.value == '' || description.value == '' || dueDate.value == '') {
+            console.log('cancelled');
+            return;
+        }
+
+        const newTodo = new Todo(title.value, description.value, dueDate.value);
         todo.addTodo(newTodo);
-        const newTodo1 = new Todo('work2', 'do the work 2', 'feb 2',);
-        todo.addTodo(newTodo1);
+
+        pubsub.publish('todoUpdated', todo.todos);
+        console.log(todo.todos);
     },
 
     addTodo: (item) => {

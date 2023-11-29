@@ -8,7 +8,7 @@
 
 body {
     display: flex;
-    
+    position: relative;
 }
 
 .sidebar {
@@ -69,6 +69,52 @@ body {
 .sidebar > .projects > h1 {
     margin: 5px 10px;
 }
+
+.addTaskDialog {
+    border: 1px solid black;
+    position: absolute;
+    left: 25%;
+    top: 10%;
+    display: none;
+    padding: 10px;
+
+}
+
+.sidebar + .active {
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    gap: 8px;
+}
+
+.sidebar + .active > div {
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar + .active > div > * {
+    padding: 0 5px;
+}
+
+.sidebar + .active > .description > textarea {
+    height: 5rem;
+    padding: 0 5px;
+}
+
+.sidebar + .active > .dialogButtonsContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.sidebar + .active > .dialogButtonsContainer > button {
+    width: 100px;
+}
+
+dialog::backdrop {
+    background-color: pink;
+    opacity: 0.75;
+  }
 
 
 

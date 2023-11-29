@@ -42,11 +42,25 @@
         </div>
     </div>
 
-    <dialog class="addTaskDialog">
-        <h1>Test</h1>
-        <input type="text">
-        <button>close</button>
-    </dialog>
+    <div class="addTaskDialog">
+        <h1>Add Task</h1>
+        <div>
+            <label for="title">Task</label>
+            <input id="title" type="text">
+        </div>
+        <div class="description">
+            <label for="description">Description</label>
+            <textarea id="description" type="text"></textarea>
+        </div>
+        <div>
+            <label for="dueDate">Due Date</label>
+            <input id="dueDate" type="date">
+        </div>
+        <div class="dialogButtonsContainer">
+            <button class="submitDialog">Submit</button>
+            <button class="closeDialog">close</button>
+        </div>
+    </div>
 
     <div class="main">
 
