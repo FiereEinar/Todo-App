@@ -1,10 +1,11 @@
-import { pubsub } from "./pubsub";
+import { pubsub } from "./pubsub.js";
 
 export class Todo {
     constructor(title, description, dueDate) {
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
+        this.dueTime = dueTime
         this.done = false;
     }
 
@@ -36,6 +37,10 @@ export const todo = {
 
     removeTodo: (item) => {
         todo.todos = todo.todos.filter(obj => obj.title !== item);
-    }
+    },
+    
+    getTodo: () => {
+    	return todo.todos;
+    },
 }
 

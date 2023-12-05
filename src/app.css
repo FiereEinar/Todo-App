@@ -124,4 +124,5 @@ dialog::backdrop {
 .main {
     border: 1px solid black;
     width: 100%;
+    color: black;
 }

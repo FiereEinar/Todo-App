@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo App</title>
+    <link rel="stylesheet" href="./app.css">
 </head>
 <body>
     <div class="sidebar">
@@ -16,7 +17,7 @@
                 <img src="../src/assets/plus.png" alt="">
                 <h4>Add task</h4>
             </button>
-            <button>
+            <button class="tasksButton">
                 <img src="../src/assets/clipboard.png" alt="">
                 <h4>Tasks</h4>
             </button>
@@ -56,6 +57,10 @@
             <label for="dueDate">Due Date</label>
             <input id="dueDate" type="date">
         </div>
+        <div>
+            <label for="dueTime">Due Time</label>
+            <input id="dueTime" type="time">
+        </div>
         <div class="dialogButtonsContainer">
             <button class="submitDialog">Submit</button>
             <button class="closeDialog">close</button>
@@ -66,5 +71,6 @@
 
     </div>
 
+	<script type="module" defer src="./main.js"></script>
 </body>
 </html>
