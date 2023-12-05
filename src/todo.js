@@ -1,34 +1,27 @@
 import { pubsub } from "./pubsub.js";
 
 export class Todo {
-    constructor(title, description, dueDate) {
+    constructor(title, dueDate, dueTime) {
         this.title = title;
-        this.description = description;
         this.dueDate = dueDate;
         this.dueTime = dueTime
         this.done = false;
     }
-
 }
 
 export const todo = {
     todos: [],
 
-    // init: () => {
-    //     pubsub.subscribe('todoAdded', todo.addTodo);
-    // },
-
-    createTodo: (title, description, dueDate) => {
-        if (title.value == '' || description.value == '' || dueDate.value == '') {
+    createTodo: (title, dueDate, dueTime) => {
+        if (title == '' || dueDate == '') {
             console.log('cancelled');
             return;
         }
 
-        const newTodo = new Todo(title.value, description.value, dueDate.value);
+        const newTodo = new Todo(title, dueDate, dueTime);
         todo.addTodo(newTodo);
 
         pubsub.publish('todoUpdated', todo.todos);
-        console.log(todo.todos);
     },
 
     addTodo: (item) => {
@@ -43,4 +36,3 @@ export const todo = {
     	return todo.todos;
     },
 }
-

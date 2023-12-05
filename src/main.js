@@ -1,4 +1,4 @@
-// import '../src/app.css';
+import '../src/app.css';
 
 import { pubsub } from './pubsub.js';
 import { todo } from "./todo.js";
@@ -12,7 +12,6 @@ const dialogHandler = (() => {
 	const submitDialogButton = document.querySelector('.submitDialog');
 	
 	const title = document.querySelector('.addTaskDialog #title');
-	const description = document.querySelector('.addTaskDialog #description');
 	const dueDate = document.querySelector('.addTaskDialog #dueDate');
 	const dueTime = document.querySelector('.addTaskDialog #dueTime');
 
@@ -25,35 +24,49 @@ const dialogHandler = (() => {
     });
     
     submitDialogButton.addEventListener('click', () => {
-        todo.createTodo(title, description, dueDate, dueTime);
+        todo.createTodo(title.value, dueDate.value, dueTime.value);
         clearDialog();
         taskDialog.classList.remove('active');
     });
 
     function clearDialog() {
         title.value = '';
-        description.value = '';
         dueDate.value = '';
+        dueTime.value = '';
     }
 })();
 
 const UIManager = (() => {
 	const tasksButton = document.querySelector('.tasksButton');
-	const container = document.querySelector('.main');
+    const container = document.querySelector('.main');
+    
+
+    
+    
+    todo.createTodo('Test', '2023-12-01', '12:24');
+    todo.createTodo('Test 2', '2023-12-01', '12:24');
+
+    // init
+    render();
+    
+    pubsub.subscribe('todoUpdated', render);
 	
 	tasksButton.addEventListener('click', () => {
-		render();
-		console.log('clicked');
-	});
-	
-	function render() {
-		const list = todo.getTodo();
+        render();
+    });
+
+    // const tasks = document.querySelectorAll('.container');
+    // console.log(tasks);
+
+	function render(todoList) {
+        const list = todoList ?? todo.getTodo();
+
 		clearScreen();
 		renderer.renderTodo(list, container);
 	}
 	
 	function clearScreen() {
-		let prev = container.querySelectorAll('div');
+		let prev = container.querySelectorAll('div, h1');
 		prev.forEach((element) => element.remove());
 	}
 })();

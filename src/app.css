@@ -74,17 +74,17 @@ body {
 .addTaskDialog {
     border: 1px solid black;
     position: absolute;
-    left: 25%;
+    left: 15%;
     top: 10%;
     display: none;
     padding: 10px;
-
+    background-color: pink;
 }
 
 .sidebar + .active {
     display: flex;
     flex-direction: column;
-    width: 400px;
+    width: 300px;
     gap: 8px;
 }
 
@@ -112,11 +112,6 @@ body {
     width: 100px;
 }
 
-dialog::backdrop {
-    background-color: pink;
-    opacity: 0.75;
-  }
-
 
 
 
@@ -125,4 +120,37 @@ dialog::backdrop {
     border: 1px solid black;
     width: 100%;
     color: black;
+    padding: 20px;
 }
+
+.main > div {
+    display: flex;
+    width: fit-content;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 5px;
+    border: 1px solid white;
+    border-radius: 5px;
+    padding: 2px 5px;
+}
+
+.main > div:hover {
+    border: 1px solid;
+}
+
+.main > div > img {
+    /* border: 1px solid; */
+    width: 20px;
+    height: 100%;
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 5px;
+    justify-self: flex-end;
+}
+.main > div > input:not(:first-of-type) {
+    width: 120px;
+    background-color: transparent;
+    border: 1px solid white;
+
+}
+
