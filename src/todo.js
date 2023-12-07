@@ -35,4 +35,8 @@ export const todo = {
     getTodo: () => {
     	return todo.todos;
     },
+
+    updateTodo: (newList) => {
+        todo.todos = newList;
+    },
 }

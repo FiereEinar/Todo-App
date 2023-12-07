@@ -1,4 +1,5 @@
-import { pubsub } from "./pubsub";
+import { pubsub } from "./pubsub.js";
+
 import editImg from '../src/assets/edit.png';
 import deleteImg from '../src/assets/delete.png';
 
@@ -8,11 +9,16 @@ import deleteImg from '../src/assets/delete.png';
 
 export const renderer = {
 	renderTodo: (list, parent) => {
-		if (list.length == 0) { return };
-
 		const header = document.createElement('h1');
-		header.innerHTML = 'Tasks';
-		parent.appendChild(header);
+		
+		if (list.length == 0) {
+			header.innerHTML = 'Nothing to see here...';
+			parent.appendChild(header);
+			return;
+		} else {
+			header.innerHTML = 'Tasks';
+			parent.appendChild(header);
+		}
 
 		list.forEach((todo) => {
 			const container = document.createElement('div');
@@ -51,6 +57,7 @@ export const renderer = {
 			editBtn.classList.add('edit');
 			editBtn.src = editImg;
 			container.appendChild(editBtn);
+
 			const inputs = container.querySelectorAll('input');
 			editBtn.addEventListener('click', () => {
 				inputs.forEach((input) => {
@@ -67,6 +74,18 @@ export const renderer = {
 			deleteBtn.classList.add('delete');
 			deleteBtn.src = deleteImg;
 			container.appendChild(deleteBtn);
+			
+			deleteBtn.addEventListener('click', () => {
+				filterList(todo.title);
+			});
 		});
+		function filterList(title) {
+			list = list.filter((item) => item.title != title);
+			pubsub.publish('todoUpdated', list);
+		}
+	},
+
+	renderProjects: () => {
+
 	},
 }
