@@ -24,7 +24,8 @@ body {
     gap: 5px;
 }
 
-.sidebar > .nav > button {
+.sidebar > .nav > button,
+.sidebar > .projects > .projectsContainer > button {
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -35,11 +36,13 @@ body {
     gap: 8px;
 }
 
-.sidebar > .nav > button:hover {
+.sidebar > .nav > button:hover,
+.sidebar > .projects > .projectsContainer > button:hover {
     background-color: #cdcece;
 }
 
-.sidebar > .nav > button > img {
+.sidebar > .nav > button > img,
+.sidebar > .projects > .projectsContainer > button > img {
     width: 20px;
 }
 
@@ -52,6 +55,7 @@ body {
     border: none;
     padding: 8px;
     gap: 8px;
+    margin-bottom: 5px;
 }
 
 .sidebar > .projects > button:hover {
@@ -63,8 +67,9 @@ body {
 }
 
 .sidebar > .projects > .projectsContainer {
-    border: 1px solid red;
-    height: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 .sidebar > .projects > h1 {
@@ -119,7 +124,7 @@ body {
 
 .main {
     border: 1px solid black;
-    width: 100%;
+    width: fit-content;
     color: black;
     padding: 20px;
 }

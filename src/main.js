@@ -47,7 +47,6 @@ const dialogHandler = (() => {
         taskDialog.classList.remove('active');
     });
     
-    // TODO: fix the createProject, it is showing the wrong data
     submitDialogButton.addEventListener('click', () => {
         if (mode == 'task') {
             todo.createTodo(title.value, dueDate.value, dueTime.value);
@@ -79,29 +78,38 @@ const dialogHandler = (() => {
 export const UIManager = (() => {
 	const tasksButton = document.querySelector('.tasksButton');
     const container = document.querySelector('.main');
-    
-    todo.createTodo('Test', '2023-12-01', '12:24');
-    todo.createTodo('Test 2', '2023-12-01', '12:24');
+    const projectsContainer = document.querySelector('.projectsContainer');
 
-    // init
-    render();
-    
-    pubsub.subscribe('todoUpdated', render);
     pubsub.subscribe('todoUpdated', todo.updateTodo);
+    pubsub.subscribe('todoUpdated', renderTask);
+    pubsub.subscribe('projectsUpdated', renderProjects);
+
+    // TESTS
+    todo.createTodo('Test', '2023-12-01', '12:24');
+    todo.createTodo('Test 2', '2023-12-03', '12:24');
+    projects.createProject('Work', '2023-12-20', '12:00', 'Create a todo app');
+    projects.createProject('Workout', '2023-12-15', '08:30', 'Do some cardio');
 	
 	tasksButton.addEventListener('click', () => {
-        render();
+        renderTask();
     });
 
-	function render(todoList) {
-        const list = todoList ?? todo.getTodo();
+	function renderTask() {
+        const list = todo.getTodo();
 
-		clearScreen();
+		clearScreen(container);
 		renderer.renderTodo(list, container);
 	}
+
+    function renderProjects() {
+        const list = projects.getProjectsList();
+
+        clearScreen(projectsContainer);
+        renderer.renderProjects(list, projectsContainer)
+    }
 	
-	function clearScreen() {
-		let prev = container.querySelectorAll('div, h1');
+	function clearScreen(parent) {
+		let prev = parent.querySelectorAll('div, h1, button, p, h5');
 		prev.forEach((element) => element.remove());
 	}
 })();

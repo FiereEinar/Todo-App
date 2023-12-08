@@ -2,6 +2,9 @@ import { pubsub } from "./pubsub.js";
 
 import editImg from '../src/assets/edit.png';
 import deleteImg from '../src/assets/delete.png';
+import projectIcon from '../src/assets/empty-folder.png';
+
+import { format, formatDistanceToNow } from 'date-fns';
 
 // TODO: add checkbox
 // TODO: add expand on click functionality
@@ -41,9 +44,11 @@ export const renderer = {
 			todoName.disabled = true;
 			container.appendChild(todoName);
 
+			const date = [todo.dueDate, todo.dueTime];
+			const formattedDate = date.join('T');
 			const dueDate = document.createElement('input');
-			dueDate.value = todo.dueDate;
-			dueDate.setAttribute('type', 'date');
+			dueDate.value = formatDistanceToNow(new Date(formattedDate), {addSuffix: true});
+			dueDate.setAttribute('type', 'text');
 			dueDate.disabled = true;
 			container.appendChild(dueDate);
 
@@ -85,7 +90,40 @@ export const renderer = {
 		}
 	},
 
-	renderProjects: () => {
+	renderProjects: (list, parent) => {
+		if (list.length == 0) { return; }
 
+		list.forEach((project) => {
+			const projectContainer = document.createElement('button');
+			projectContainer.addEventListener('click', expandProject);
+			parent.appendChild(projectContainer);
+
+			const icon = document.createElement('img');
+			icon.src = projectIcon;
+			projectContainer.appendChild(icon);
+
+			const projectTitle = document.createElement('h4');
+			projectTitle.innerHTML = project.title;
+			projectContainer.appendChild(projectTitle);
+
+			function expandProject() {
+				const container = document.querySelector('.main');
+
+				let prev = container.querySelectorAll('h1, div, p, h5');
+				prev.forEach((element) => element.remove());
+
+				const title = document.createElement('h1');
+				title.innerHTML = project.title;
+				container.appendChild(title);
+
+				const description = document.createElement('h5');
+				description.innerHTML = project.description;
+				container.appendChild(description);
+
+				const date = document.createElement('p');
+				date.innerHTML = project.dueDate;
+				container.appendChild(date);
+			}
+		});
 	},
 }

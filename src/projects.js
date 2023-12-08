@@ -1,3 +1,4 @@
+import { pubsub } from "./pubsub.js";
 import { Todo } from "./todo.js";
 
 class Project extends Todo {
@@ -11,10 +12,11 @@ class Project extends Todo {
 export const projects = {
     projectsList: [],
 
-    createProject: () => {
+    createProject: (title, dueDate, dueTime, description) => {
         const project = new Project(title, dueDate, dueTime, description);
         projects.addToProjectsList(project);
-        console.log(projects.projectsList)
+        
+        pubsub.publish('projectsUpdated', projects.projectsList);
     },
     addToProjectsList: (item) => {
         projects.projectsList.push(item);
