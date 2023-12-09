@@ -1,4 +1,5 @@
 import { pubsub } from "./pubsub.js";
+import { dialogHandler } from "./main.js";
 
 import editImg from '../src/assets/edit.png';
 import deleteImg from '../src/assets/delete.png';
@@ -63,16 +64,8 @@ export const renderer = {
 			editBtn.src = editImg;
 			container.appendChild(editBtn);
 
-			const inputs = container.querySelectorAll('input');
 			editBtn.addEventListener('click', () => {
-				inputs.forEach((input) => {
-					input.disabled = !input.disabled;
-					if (!input.disabled) {
-						input.style.border = '1px solid'
-					} else {
-						input.style.border = '1px solid white'
-					}
-				});	
+				dialogHandler.editTask(todo);
 			});
 
 			const deleteBtn = document.createElement('img');
@@ -83,6 +76,8 @@ export const renderer = {
 			deleteBtn.addEventListener('click', () => {
 				filterList(todo.title);
 			});
+
+			pubsub.subscribe('todoDeleted', filterList);
 		});
 		function filterList(title) {
 			list = list.filter((item) => item.title != title);

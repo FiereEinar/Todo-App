@@ -5,7 +5,7 @@ import { todo } from "./todo.js";
 import { renderer } from "./renderer.js";
 import { projects } from './projects.js';
 
-const dialogHandler = (() => {
+export const dialogHandler = (() => {
 	const addTaskButton = document.querySelector('.addTaskButton');
 
 	const taskDialog = document.querySelector('.addTaskDialog');
@@ -18,24 +18,22 @@ const dialogHandler = (() => {
 	const dueDate = document.querySelector('.addTaskDialog #dueDate');
 	const dueTime = document.querySelector('.addTaskDialog #dueTime');
 
+    const headerText = document.querySelector('.addTaskDialog h1');
+    const description = document.querySelector('.description');
+
+
     let mode = '';
+    let titlePlaceholder = '';
 
     addTaskButton.addEventListener('click', () => {
-        const description = document.querySelector('.description'); 
-        const nodes = description.querySelectorAll('label, textarea');
-        const headerText = document.querySelector('.addTaskDialog h1');
+        clearDescription();
         mode = 'task';
 
         headerText.innerHTML = 'Add Task';
-        if (nodes != null) {
-            nodes.forEach((node) => node.remove());
-        }
         taskDialog.classList.add('active');
     });
 
     addProjectButton.addEventListener('click', () => {
-        const description = document.querySelector('.description');
-        const headerText = document.querySelector('.addTaskDialog h1');
         mode = 'project';
 
         headerText.innerHTML = 'Add Project';
@@ -44,25 +42,53 @@ const dialogHandler = (() => {
     })
     
     closeDialogButton.addEventListener('click', () => {
+        clearDescription();
+        clearDialog();
         taskDialog.classList.remove('active');
     });
     
     submitDialogButton.addEventListener('click', () => {
         if (mode == 'task') {
             todo.createTodo(title.value, dueDate.value, dueTime.value);
-        } else {
+        } else if (mode == 'project') {
             const description = document.querySelector('.addTaskDialog #description');
             projects.createProject(title.value, dueDate.value, dueTime.value, description.value);
+        } else if (mode == 'edit') {
+            pubsub.publish('todoDeleted', titlePlaceholder);
+            todo.createTodo(title.value, dueDate.value, dueTime.value);
         }
+        clearDescription();
         clearDialog();
         taskDialog.classList.remove('active');
     });
+
+    function editTask(task) {
+        mode = 'edit';
+        titlePlaceholder = task.title;
+
+        headerText.innerHTML = 'Edit';
+
+        title.value = task.title;
+        dueDate.value = task.dueDate;
+        dueTime.value = task.dueTime
+
+        taskDialog.classList.add('active');
+    }
 
     function clearDialog() {
         title.value = '';
         dueDate.value = '';
         dueTime.value = '';
     }
+
+    function clearDescription() {
+        const nodes = description.querySelectorAll('label, textarea');
+
+        if (nodes != null) {
+            nodes.forEach((node) => node.remove());
+        }
+    }
+
     function addDescription(parent) {
         const label = document.createElement('label');
         label.setAttribute('for', 'description');
@@ -72,6 +98,9 @@ const dialogHandler = (() => {
         const input = document.createElement('textarea');
         input.id = 'description';
         parent.appendChild(input);
+    }
+    return {
+        editTask: editTask,
     }
 })();
 
@@ -85,6 +114,8 @@ export const UIManager = (() => {
     pubsub.subscribe('projectsUpdated', renderProjects);
 
     // TESTS
+    let testDate1 = new Date('2023-12-01');
+    console.log(testDate1)
     todo.createTodo('Test', '2023-12-01', '12:24');
     todo.createTodo('Test 2', '2023-12-03', '12:24');
     projects.createProject('Work', '2023-12-20', '12:00', 'Create a todo app');

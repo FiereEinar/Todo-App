@@ -13,6 +13,10 @@ export const projects = {
     projectsList: [],
 
     createProject: (title, dueDate, dueTime, description) => {
+        if (title == '' || description == '') {
+            console.log('cancelled');
+            return;
+        }
         const project = new Project(title, dueDate, dueTime, description);
         projects.addToProjectsList(project);
         
