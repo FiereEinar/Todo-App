@@ -20,17 +20,17 @@ export const dialogHandler = (() => {
 
     const headerText = document.querySelector('.addTaskDialog h1');
     const description = document.querySelector('.description');
+    const fieldset = document.querySelector('.addTaskDialog fieldset');
+    const form = document.querySelector('.addTaskDialog form');
 
-
+    // pubsub.subscribe('projectsUpdated', showDialogProjects)
     let mode = '';
+    // TODO: change the algo for editing tasks
+    // for editing
     let titlePlaceholder = '';
 
     addTaskButton.addEventListener('click', () => {
-        clearDescription();
-        mode = 'task';
-
-        headerText.innerHTML = 'Add Task';
-        taskDialog.classList.add('active');
+        showTaskDialog();
     });
 
     addProjectButton.addEventListener('click', () => {
@@ -38,13 +38,13 @@ export const dialogHandler = (() => {
 
         headerText.innerHTML = 'Add Project';
         addDescription(description);
-        taskDialog.classList.add('active');
+        showDialog();
     })
     
     closeDialogButton.addEventListener('click', () => {
         clearDescription();
         clearDialog();
-        taskDialog.classList.remove('active');
+        hideDialog();
     });
     
     submitDialogButton.addEventListener('click', () => {
@@ -57,9 +57,19 @@ export const dialogHandler = (() => {
             pubsub.publish('todoDeleted', titlePlaceholder);
             todo.createTodo(title.value, dueDate.value, dueTime.value);
         }
-        clearDescription();
+
+        // experimental
+        const data =  new FormData(form);
+        let output = ''
+        for (const entry of data) {
+            output = `${output}${entry[0]}=${entry[1]}\r`;
+            console.log(entry[1])
+        }
+        console.log(output)
+
+        clearDescription(); 
         clearDialog();
-        taskDialog.classList.remove('active');
+        hideDialog();
     });
 
     function editTask(task) {
@@ -72,7 +82,7 @@ export const dialogHandler = (() => {
         dueDate.value = task.dueDate;
         dueTime.value = task.dueTime
 
-        taskDialog.classList.add('active');
+        showDialog();
     }
 
     function clearDialog() {
@@ -99,8 +109,39 @@ export const dialogHandler = (() => {
         input.id = 'description';
         parent.appendChild(input);
     }
+
+    function showDialog() {
+        taskDialog.classList.add('active');
+    }
+
+    function hideDialog() {
+        taskDialog.classList.remove('active');
+    }
+
+    function showTaskDialog() {
+        clearDescription();
+        mode = 'task';
+        headerText.innerHTML = 'Add Task';
+        showDialogProjects();
+        showDialog();
+    }
+
+    function showDialogProjects() {
+        const list = projects.getProjectsList();
+        clearPreviousProjects();
+        renderer.renderDialogProjects(list, fieldset);
+    }
+
+    function clearPreviousProjects() {
+        const previousProjects = fieldset.querySelectorAll('div');
+        if (previousProjects != null) {
+            previousProjects.forEach((projects) => projects.remove());
+        }
+    }
+
     return {
         editTask: editTask,
+        showTaskDialog: showTaskDialog,
     }
 })();
 
@@ -114,8 +155,6 @@ export const UIManager = (() => {
     pubsub.subscribe('projectsUpdated', renderProjects);
 
     // TESTS
-    let testDate1 = new Date('2023-12-01');
-    console.log(testDate1)
     todo.createTodo('Test', '2023-12-01', '12:24');
     todo.createTodo('Test 2', '2023-12-03', '12:24');
     projects.createProject('Work', '2023-12-20', '12:00', 'Create a todo app');
@@ -140,7 +179,7 @@ export const UIManager = (() => {
     }
 	
 	function clearScreen(parent) {
-		let prev = parent.querySelectorAll('div, h1, button, p, h5');
+		let prev = parent.querySelectorAll('div, h1, button, p, h5, img');
 		prev.forEach((element) => element.remove());
 	}
 })();

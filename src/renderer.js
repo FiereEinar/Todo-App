@@ -4,6 +4,7 @@ import { dialogHandler } from "./main.js";
 import editImg from '../src/assets/edit.png';
 import deleteImg from '../src/assets/delete.png';
 import projectIcon from '../src/assets/empty-folder.png';
+import addTaskIcon from '../src/assets/plus.png';
 
 import { format, formatDistanceToNow } from 'date-fns';
 
@@ -104,12 +105,23 @@ export const renderer = {
 			function expandProject() {
 				const container = document.querySelector('.main');
 
-				let prev = container.querySelectorAll('h1, div, p, h5');
+				let prev = container.querySelectorAll('h1, div, p, h5, img, header');
 				prev.forEach((element) => element.remove());
+
+				const headerContainer = document.createElement('header');
+				container.appendChild(headerContainer);
 
 				const title = document.createElement('h1');
 				title.innerHTML = project.title;
-				container.appendChild(title);
+				headerContainer.appendChild(title);
+
+				const addTask = document.createElement('img');
+				addTask.src = addTaskIcon;
+				headerContainer.appendChild(addTask);
+
+				addTask.addEventListener('click', () => {
+					dialogHandler.showTaskDialog();
+				});
 
 				const description = document.createElement('h5');
 				description.innerHTML = project.description;
@@ -119,6 +131,26 @@ export const renderer = {
 				date.innerHTML = project.dueDate;
 				container.appendChild(date);
 			}
+		});
+	},
+	renderDialogProjects: (list, parent) => {
+		if (list.length == 0) return;
+		
+		list.forEach((proj) => {
+			const projContainer = document.createElement('div');
+			parent.appendChild(projContainer);
+
+			const input = document.createElement('input');
+			input.setAttribute('type', 'radio');
+			input.setAttribute('value', proj.title);
+			input.setAttribute('name', 'project');
+			input.id = proj.title;
+			projContainer.appendChild(input);
+
+			const label = document.createElement('label');
+			label.setAttribute('for', proj.title);
+			label.innerHTML = proj.title;
+			projContainer.appendChild(label);
 		});
 	},
 }

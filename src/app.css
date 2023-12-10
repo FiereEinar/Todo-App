@@ -114,6 +114,10 @@ body {
     gap: 10px;
 }
 
+.sidebar + .active > form fieldset {
+    border: none;
+}
+
 .sidebar + .active > .dialogButtonsContainer > button {
     width: 100px;
 }
@@ -156,7 +160,27 @@ body {
 .main > div > input:not(:first-of-type) {
     width: 120px;
     background-color: transparent;
-    border: 1px solid white;
+    border: none;
 
 }
 
+/* Projects */
+
+.main > header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.main > header > img {
+    /* border: 1px solid; */
+    width: 30px;
+    height: 30px;
+    padding: 5px;
+    border-radius: 50%;
+}
+
+.main > header > img:hover {
+    background-color: #c2c4c4;
+}
