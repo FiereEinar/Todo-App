@@ -25,7 +25,7 @@ export const dialogHandler = (() => {
 
     // pubsub.subscribe('projectsUpdated', showDialogProjects)
     let mode = '';
-    // TODO: change the algo for editing tasks
+    // TODO: change the algo for editing tasks.
     // for editing
     let titlePlaceholder = '';
 
@@ -54,11 +54,12 @@ export const dialogHandler = (() => {
             const description = document.querySelector('.addTaskDialog #description');
             projects.createProject(title.value, dueDate.value, dueTime.value, description.value);
         } else if (mode == 'edit') {
-            pubsub.publish('todoDeleted', titlePlaceholder);
-            todo.createTodo(title.value, dueDate.value, dueTime.value);
+        	const updatedTodo = todo.makeTodo(title.value, dueDate.value, dueTime.value);
+            pubsub.publish('todoEdited', updatedTodo);
         }
 
         // experimental
+        // TODO: change this to <select> instead of <fieldset>
         const data =  new FormData(form);
         let output = ''
         for (const entry of data) {

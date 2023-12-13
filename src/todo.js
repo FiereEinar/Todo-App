@@ -23,6 +23,13 @@ export const todo = {
 
         pubsub.publish('todoUpdated', todo.todos);
     },
+    
+    // for making a to-do and returning it without 
+    // adding it to the array
+    makeTodo: (title, dueDate, dueTime) => {
+    	const newTodo = new Todo(title, dueDate, dueTime);
+    	return newTodo;
+    },
 
     addTodo: (item) => {
         todo.todos.push(item);

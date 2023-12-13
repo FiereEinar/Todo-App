@@ -78,11 +78,17 @@ export const renderer = {
 				filterList(todo.title);
 			});
 
-			pubsub.subscribe('todoDeleted', filterList);
+			pubsub.subscribe('todoEdited', applyChanges);
 		});
 		function filterList(title) {
 			list = list.filter((item) => item.title != title);
 			pubsub.publish('todoUpdated', list);
+		}
+		
+		function applyChanges(newTodo) {
+			todo.title = newTodo.title;
+			todo.dueDate = newTodo.dueDate;
+			todo.dueTime = newTodo.dueTime;
 		}
 	},
 
