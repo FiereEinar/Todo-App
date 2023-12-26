@@ -26,6 +26,7 @@ export const todo = {
         newTodo.setId(todo.generateId(5));
         todo.addTodo(newTodo);
 
+        // pubsub.publish('todoAdded', newTodo);
         pubsub.publish('todoUpdated', todo.todos);
     },
     

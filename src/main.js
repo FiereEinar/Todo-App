@@ -20,7 +20,6 @@ export const dialogHandler = (() => {
     const headerText = document.querySelector('.addTaskDialog h1');
     const description = document.querySelector('.description');
     const fieldset = document.querySelector('.addTaskDialog fieldset');
-    const form = document.querySelector('.addTaskDialog form');
 
     let mode = '';
     let editedComponentId = ''; // for editing
@@ -45,34 +44,33 @@ export const dialogHandler = (() => {
     });
     
     submitDialogButton.addEventListener('click', () => {
-        switch (mode) {
-            case 'task':
-                makeTodo();
-                break;
-            case 'project':
-                makeProject();
-                break;
-            case 'edit':
-                editTodo();
-                break;
-        }
-        // experimental
-        // TODO: change this to <select> instead of <fieldset>
-        const data =  new FormData(form);
-        let output = ''
-        for (const entry of data) {
-            output = `${output}${entry[0]}=${entry[1]}\r`;
-            console.log(entry[1])
-        }
-        console.log(output)
-        
+        analyzeMode();
         clearChildElements(fieldset);
         clearChildElements(description);
         clearDialog();
         hideDialog();
 
+        function analyzeMode() {
+            switch (mode) {
+                case 'task':
+                    makeTodo();
+                    break;
+                case 'project':
+                    makeProject();
+                    break;
+                case 'edit':
+                    editTodo();
+                    break;
+            }
+        }
+
         function makeTodo() {
             todo.createTodo(title.value, dueDate.value, dueTime.value);
+
+            const newTodo = todo.makeTodo(title.value, dueDate.value, dueTime.value);
+            const select = document.querySelector('.addTaskDialog form fieldset select');
+            projects.addTaskToProjects(select.value, newTodo);
+            console.log(select.value);
         }
 
         function makeProject() {
@@ -91,10 +89,8 @@ export const dialogHandler = (() => {
 
     function editTask(task) {
         mode = 'edit';
-        editedComponentId = task.id;
-        console.log(editedComponentId)
-
         headerText.innerHTML = 'Edit';
+        editedComponentId = task.id;
 
         title.value = task.title;
         dueDate.value = task.dueDate;
@@ -179,6 +175,7 @@ export const UIManager = (() => {
 
     pubsub.subscribe('todoUpdated', todo.updateTodo);
     pubsub.subscribe('todoUpdated', renderTask);
+    // pubsub.subscribe('todoAdded', projects.addTaskToProjects);
     pubsub.subscribe('projectsUpdated', renderProjects);
 
     // TESTS

@@ -7,6 +7,10 @@ class Project extends Todo {
         this.description = description;
         this.tasks = [];
     }
+
+    addToTasks(item) {
+        this.tasks.push(item);
+    }
 }
 
 export const projects = {
@@ -21,11 +25,22 @@ export const projects = {
         projects.addToProjectsList(project);
         
         pubsub.publish('projectsUpdated', projects.projectsList);
+        console.log(projects.projectsList)
     },
+
     addToProjectsList: (item) => {
         projects.projectsList.push(item);
     },
+
     getProjectsList: () => {
         return projects.projectsList;
+    },
+
+    addTaskToProjects: (title, item) => {
+        projects.projectsList.map((project) => {
+            if (project.title == title) {
+                project.addToTasks(item);
+            }
+        });
     },
 }

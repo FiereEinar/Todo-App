@@ -7,30 +7,39 @@ import projectIcon from '../src/assets/empty-folder.png';
 import addTaskIcon from '../src/assets/plus.png';
 
 import { formatDistanceToNow } from 'date-fns';
+import { projects } from "./projects.js";
 
 export const renderer = {
 	renderTodo: (list, parent) => {
-		const header = document.createElement('h1');
+		checkList();
+		renderList();
 		
-		if (list.length == 0) {
-			header.innerHTML = 'Nothing to see here...';
-			parent.appendChild(header);
-			return;
-		} else {
-			header.innerHTML = 'Tasks';
-			parent.appendChild(header);
+		function checkList() {
+			const header = document.createElement('h1');
+
+			if (list.length == 0) {
+				header.innerHTML = 'Nothing to see here...';
+				parent.appendChild(header);
+				return;
+			} else {
+				header.innerHTML = 'Tasks';
+				parent.appendChild(header);
+			}
 		}
 
-		list.forEach((todo) => {
-			const container = document.createElement('div');
-			container.classList.add('container');
-			parent.appendChild(container);
+		function renderList() {
+			list.forEach((todo) => {
+				const container = document.createElement('div');
+				container.classList.add('container');
+				parent.appendChild(container);
 
-			renderer.makeTaskComponent(todo, container);
-		});
+				renderer.makeTaskComponent(todo, container);
+			});
+		}
 	},
 	
 	makeTaskComponent: (todo, container) => {
+		// if (todo.title == null) return;
 		container.id = todo.id;
 		// to get rid of that warning that says an input should have an ID
 		const randomNum = Math.floor(Math.random() * 999);
@@ -132,27 +141,50 @@ export const renderer = {
 				const date = document.createElement('p');
 				date.innerHTML = project.dueDate;
 				container.appendChild(date);
+
+				const projectTasksContainer = document.createElement('div');
+				projectTasksContainer.classList.add('projectTasksContainer');
+				container.appendChild(projectTasksContainer);
+
+				const tasksContainer = container.querySelector('.projectTasksContainer')
+				
+				generateTasksFromProject(tasksContainer);
+			}
+
+			function generateTasksFromProject(container) {
+				if (project.tasks.length > 0) {
+					console.log(project.tasks.length)
+					project.tasks.forEach((task) => {
+						renderer.makeTaskComponent(task, container);
+						console.log(task);
+					});
+				}
 			}
 		});
 	},
+
 	renderDialogProjects: (list, parent) => {
 		if (list.length == 0) return;
+
+		const legend = document.createElement('legend');
+		legend.innerHTML = 'Select a project';
+		parent.appendChild(legend);
+
+		const select = document.createElement('select');
+		select.setAttribute('name', 'project');
+		parent.appendChild(select);
+
+		createOption(); // 'none' option
 		
 		list.forEach((proj) => {
-			const projContainer = document.createElement('div');
-			parent.appendChild(projContainer);
-
-			const input = document.createElement('input');
-			input.setAttribute('type', 'radio');
-			input.setAttribute('value', proj.title);
-			input.setAttribute('name', 'project');
-			input.id = proj.title;
-			projContainer.appendChild(input);
-
-			const label = document.createElement('label');
-			label.setAttribute('for', proj.title);
-			label.innerHTML = proj.title;
-			projContainer.appendChild(label);
+			createOption(proj.title);
 		});
+
+		function createOption(title) {
+			const option = document.createElement('option');
+			option.setAttribute('value', title || 'none');
+			option.innerHTML = title || 'none';
+			select.appendChild(option);			
+		}
 	},
 }
