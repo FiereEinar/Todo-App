@@ -6,11 +6,7 @@ import deleteImg from '../src/assets/delete.png';
 import projectIcon from '../src/assets/empty-folder.png';
 import addTaskIcon from '../src/assets/plus.png';
 
-import { format, formatDistanceToNow } from 'date-fns';
-
-// TODO: add checkbox
-// TODO: add expand on click functionality
-// TODO: add edit functionality
+import { formatDistanceToNow } from 'date-fns';
 
 export const renderer = {
 	renderTodo: (list, parent) => {
@@ -27,69 +23,69 @@ export const renderer = {
 
 		list.forEach((todo) => {
 			const container = document.createElement('div');
-			container.classList.add('.container');
+			container.classList.add('container');
 			parent.appendChild(container);
 
-			const checkbox = document.createElement('input');
-			checkbox.setAttribute('type', 'checkbox');
-			todo.done ? checkbox.checked = true : checkbox.checked = false;
-			checkbox.addEventListener('click', () => {
-				todo.done = !todo.done;
-				todo.done ? container.style.backgroundColor = 'green':
-							container.style.backgroundColor = 'white';
-			});
-			container.appendChild(checkbox);
-			
-			const todoName = document.createElement('input');
-			todoName.value = todo.title;
-			todoName.setAttribute('type', 'text');
-			todoName.disabled = true;
-			container.appendChild(todoName);
-
-			const date = [todo.dueDate, todo.dueTime];
-			const formattedDate = date.join('T');
-			const dueDate = document.createElement('input');
-			dueDate.value = formatDistanceToNow(new Date(formattedDate), {addSuffix: true});
-			dueDate.setAttribute('type', 'text');
-			dueDate.disabled = true;
-			container.appendChild(dueDate);
-
-			const dueTime = document.createElement('input');
-			dueTime.value = todo.dueTime;
-			dueTime.setAttribute('type', 'time');
-			dueTime.disabled = true;
-			container.appendChild(dueTime);
-
-			const editBtn = document.createElement('img');
-			editBtn.classList.add('edit');
-			editBtn.src = editImg;
-			container.appendChild(editBtn);
-
-			editBtn.addEventListener('click', () => {
-				dialogHandler.editTask(todo);
-			});
-
-			const deleteBtn = document.createElement('img');
-			deleteBtn.classList.add('delete');
-			deleteBtn.src = deleteImg;
-			container.appendChild(deleteBtn);
-			
-			deleteBtn.addEventListener('click', () => {
-				filterList(todo.title);
-			});
-
-			pubsub.subscribe('todoEdited', applyChanges);
+			renderer.makeTaskComponent(todo, container);
 		});
-		function filterList(title) {
-			list = list.filter((item) => item.title != title);
-			pubsub.publish('todoUpdated', list);
-		}
+	},
+	
+	makeTaskComponent: (todo, container) => {
+		container.id = todo.id;
+		// to get rid of that warning that says an input should have an ID
+		const randomNum = Math.floor(Math.random() * 999);
+
+		const checkbox = document.createElement('input');
+		checkbox.id = 'screenValue' + randomNum;
+		checkbox.setAttribute('type', 'checkbox');
+		todo.done ? checkbox.checked = true : checkbox.checked = false;
+		checkbox.addEventListener('click', () => {
+			todo.done = !todo.done;
+			todo.done ? container.style.backgroundColor = 'green':
+						container.style.backgroundColor = 'white';
+		});
+		container.appendChild(checkbox);
 		
-		function applyChanges(newTodo) {
-			todo.title = newTodo.title;
-			todo.dueDate = newTodo.dueDate;
-			todo.dueTime = newTodo.dueTime;
-		}
+		const todoName = document.createElement('input');
+		todoName.id = 'name' + randomNum;
+		todoName.value = todo.title;
+		todoName.setAttribute('type', 'text');
+		todoName.disabled = true;
+		container.appendChild(todoName);
+	
+		const date = [todo.dueDate, todo.dueTime];
+		const formattedDate = date.join('T');
+		const dueDate = document.createElement('input');
+		dueDate.id = 'date' + randomNum;
+		dueDate.value = formatDistanceToNow(new Date(formattedDate), {addSuffix: true});
+		dueDate.setAttribute('type', 'text');
+		dueDate.disabled = true;
+		container.appendChild(dueDate);
+	
+		const dueTime = document.createElement('input');
+		dueTime.id = 'time' + randomNum;
+		dueTime.value = todo.dueTime;
+		dueTime.setAttribute('type', 'time');
+		dueTime.disabled = true;
+		container.appendChild(dueTime);
+	
+		const editBtn = document.createElement('img');
+		editBtn.classList.add('edit');
+		editBtn.src = editImg;
+		container.appendChild(editBtn);
+	
+		editBtn.addEventListener('click', () => {
+			dialogHandler.editTask(todo);
+		});
+	
+		const deleteBtn = document.createElement('img');
+		deleteBtn.classList.add('delete');
+		deleteBtn.src = deleteImg;
+		container.appendChild(deleteBtn);
+	},
+
+	editTaskComponent: (editedTask, component) => {
+		renderer.makeTaskComponent(editedTask, component)
 	},
 
 	renderProjects: (list, parent) => {

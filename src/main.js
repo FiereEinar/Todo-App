@@ -7,12 +7,11 @@ import { projects } from './projects.js';
 
 export const dialogHandler = (() => {
 	const addTaskButton = document.querySelector('.addTaskButton');
-
-	const taskDialog = document.querySelector('.addTaskDialog');
 	const closeDialogButton = document.querySelector('.closeDialog');
 	const submitDialogButton = document.querySelector('.submitDialog');
-
-    const addProjectButton = document.querySelector('.addProjectButton'); 
+    const addProjectButton = document.querySelector('.addProjectButton');
+    
+	const taskDialog = document.querySelector('.addTaskDialog');
 	
 	const title = document.querySelector('.addTaskDialog #title');
 	const dueDate = document.querySelector('.addTaskDialog #dueDate');
@@ -23,11 +22,8 @@ export const dialogHandler = (() => {
     const fieldset = document.querySelector('.addTaskDialog fieldset');
     const form = document.querySelector('.addTaskDialog form');
 
-    // pubsub.subscribe('projectsUpdated', showDialogProjects)
     let mode = '';
-    // TODO: change the algo for editing tasks.
-    // for editing
-    let titlePlaceholder = '';
+    let editedComponentId = ''; // for editing
 
     addTaskButton.addEventListener('click', () => {
         showTaskDialog();
@@ -43,21 +39,23 @@ export const dialogHandler = (() => {
     
     closeDialogButton.addEventListener('click', () => {
         clearDescription();
+        clearChildElements(fieldset);
         clearDialog();
         hideDialog();
     });
     
     submitDialogButton.addEventListener('click', () => {
-        if (mode == 'task') {
-            todo.createTodo(title.value, dueDate.value, dueTime.value);
-        } else if (mode == 'project') {
-            const description = document.querySelector('.addTaskDialog #description');
-            projects.createProject(title.value, dueDate.value, dueTime.value, description.value);
-        } else if (mode == 'edit') {
-        	const updatedTodo = todo.makeTodo(title.value, dueDate.value, dueTime.value);
-            pubsub.publish('todoEdited', updatedTodo);
+        switch (mode) {
+            case 'task':
+                makeTodo();
+                break;
+            case 'project':
+                makeProject();
+                break;
+            case 'edit':
+                editTodo();
+                break;
         }
-
         // experimental
         // TODO: change this to <select> instead of <fieldset>
         const data =  new FormData(form);
@@ -67,15 +65,34 @@ export const dialogHandler = (() => {
             console.log(entry[1])
         }
         console.log(output)
-
-        clearDescription(); 
+        
+        clearChildElements(fieldset);
+        clearChildElements(description);
         clearDialog();
         hideDialog();
+
+        function makeTodo() {
+            todo.createTodo(title.value, dueDate.value, dueTime.value);
+        }
+
+        function makeProject() {
+            const description = document.querySelector('.addTaskDialog #description');
+            projects.createProject(title.value, dueDate.value, dueTime.value, description.value);
+        }
+
+        function editTodo() {
+            const container = document.querySelector('.main');
+            const updatedTodo = todo.makeTodo(title.value, dueDate.value, dueTime.value);
+            const editedComponent = container.querySelector('#' + editedComponentId);
+            clearChildElements(editedComponent);
+            renderer.editTaskComponent(updatedTodo, editedComponent);
+        }
     });
 
     function editTask(task) {
         mode = 'edit';
-        titlePlaceholder = task.title;
+        editedComponentId = task.id;
+        console.log(editedComponentId)
 
         headerText.innerHTML = 'Edit';
 
@@ -120,7 +137,6 @@ export const dialogHandler = (() => {
     }
 
     function showTaskDialog() {
-        clearDescription();
         mode = 'task';
         headerText.innerHTML = 'Add Task';
         showDialogProjects();
@@ -129,6 +145,7 @@ export const dialogHandler = (() => {
 
     function showDialogProjects() {
         const list = projects.getProjectsList();
+        console.log(list)
         clearPreviousProjects();
         renderer.renderDialogProjects(list, fieldset);
     }
@@ -137,6 +154,15 @@ export const dialogHandler = (() => {
         const previousProjects = fieldset.querySelectorAll('div');
         if (previousProjects != null) {
             previousProjects.forEach((projects) => projects.remove());
+        }
+    }
+
+    function clearChildElements(parent) {
+        if (parent !== null) {
+            const prev = parent.querySelectorAll('*');
+            if (prev != null) {
+                prev.forEach((elmt) => elmt.remove());
+            }
         }
     }
 
@@ -180,7 +206,7 @@ export const UIManager = (() => {
     }
 	
 	function clearScreen(parent) {
-		let prev = parent.querySelectorAll('div, h1, button, p, h5, img');
+		let prev = parent.querySelectorAll('*');
 		prev.forEach((element) => element.remove());
 	}
 })();
