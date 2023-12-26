@@ -1,10 +1,11 @@
 import { pubsub } from "./pubsub.js";
 
 export class Todo {
-    constructor(title, dueDate, dueTime) {
+    constructor(title, dueDate, dueTime, projectType) {
         this.title = title;
         this.dueDate = dueDate;
-        this.dueTime = dueTime
+        this.dueTime = dueTime;
+        this.projectType = projectType;
         this.done = false;
         this.id = '';
     }
@@ -16,24 +17,24 @@ export class Todo {
 export const todo = {
     todos: [],
 
-    createTodo: (title, dueDate, dueTime) => {
+    createTodo: (title, dueDate, dueTime, projectType) => {
         if (title == '' || dueDate == '') {
             console.log('cancelled');
             return;
         }
 
-        const newTodo = new Todo(title, dueDate, dueTime);
+        const newTodo = new Todo(title, dueDate, dueTime, projectType);
         newTodo.setId(todo.generateId(5));
         todo.addTodo(newTodo);
 
-        // pubsub.publish('todoAdded', newTodo);
+        pubsub.publish('todoAdded', newTodo);
         pubsub.publish('todoUpdated', todo.todos);
     },
     
     // for making a to-do and returning it without 
     // adding it to the array
-    makeTodo: (title, dueDate, dueTime) => {
-    	const newTodo = new Todo(title, dueDate, dueTime);
+    makeTodo: (title, dueDate, dueTime, projectType) => {
+    	const newTodo = new Todo(title, dueDate, dueTime, projectType);
         newTodo.setId(todo.generateId(5));
     	return newTodo;
     },

@@ -1,9 +1,11 @@
 import { pubsub } from "./pubsub.js";
 import { Todo } from "./todo.js";
 
-class Project extends Todo {
+class Project {
     constructor(title, dueDate, dueTime, description) {
-        super(title, dueDate, dueTime);
+        this.title = title;
+        this.dueDate = dueDate;
+        this.dueTime = dueTime;
         this.description = description;
         this.tasks = [];
     }
@@ -25,7 +27,6 @@ export const projects = {
         projects.addToProjectsList(project);
         
         pubsub.publish('projectsUpdated', projects.projectsList);
-        console.log(projects.projectsList)
     },
 
     addToProjectsList: (item) => {
@@ -36,9 +37,9 @@ export const projects = {
         return projects.projectsList;
     },
 
-    addTaskToProjects: (title, item) => {
+    addTaskToProjects: (item) => {
         projects.projectsList.map((project) => {
-            if (project.title == title) {
+            if (project.title == item.projectType) {
                 project.addToTasks(item);
             }
         });

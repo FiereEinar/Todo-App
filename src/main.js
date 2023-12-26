@@ -10,6 +10,8 @@ export const dialogHandler = (() => {
 	const closeDialogButton = document.querySelector('.closeDialog');
 	const submitDialogButton = document.querySelector('.submitDialog');
     const addProjectButton = document.querySelector('.addProjectButton');
+    const navButton = document.querySelector('.navButton > img');
+    const backButton = document.querySelector('.sidebar > .header img')
     
 	const taskDialog = document.querySelector('.addTaskDialog');
 	
@@ -20,9 +22,22 @@ export const dialogHandler = (() => {
     const headerText = document.querySelector('.addTaskDialog h1');
     const description = document.querySelector('.description');
     const fieldset = document.querySelector('.addTaskDialog fieldset');
+    const sidebarContainer = document.querySelector('.sidebarContainer');
 
     let mode = '';
     let editedComponentId = ''; // for editing
+
+    navButton.addEventListener('click', () => {
+        sidebarContainer.classList.add('active');
+    });
+
+    backButton.addEventListener('click', () => {
+        sidebarContainer.classList.remove('active');
+    });
+
+    sidebarContainer.addEventListener('click', () => {
+        sidebarContainer.classList.remove('active');
+    });
 
     addTaskButton.addEventListener('click', () => {
         showTaskDialog();
@@ -65,12 +80,8 @@ export const dialogHandler = (() => {
         }
 
         function makeTodo() {
-            todo.createTodo(title.value, dueDate.value, dueTime.value);
-
-            const newTodo = todo.makeTodo(title.value, dueDate.value, dueTime.value);
             const select = document.querySelector('.addTaskDialog form fieldset select');
-            projects.addTaskToProjects(select.value, newTodo);
-            console.log(select.value);
+            todo.createTodo(title.value, dueDate.value, dueTime.value, select.value);
         }
 
         function makeProject() {
@@ -80,7 +91,7 @@ export const dialogHandler = (() => {
 
         function editTodo() {
             const container = document.querySelector('.main');
-            const updatedTodo = todo.makeTodo(title.value, dueDate.value, dueTime.value);
+            const updatedTodo = todo.makeTodo(title.value, dueDate.value, dueTime.value, select.value);
             const editedComponent = container.querySelector('#' + editedComponentId);
             clearChildElements(editedComponent);
             renderer.editTaskComponent(updatedTodo, editedComponent);
@@ -91,12 +102,24 @@ export const dialogHandler = (() => {
         mode = 'edit';
         headerText.innerHTML = 'Edit';
         editedComponentId = task.id;
-
+        
         title.value = task.title;
         dueDate.value = task.dueDate;
-        dueTime.value = task.dueTime
-
+        dueTime.value = task.dueTime;
+        showDialogProjects();
+        setSelectedAttribute(task.projectType);
         showDialog();
+    }
+
+    function setSelectedAttribute(projectType) {
+        const select = document.querySelector('.addTaskDialog form fieldset select');
+        const options = select.querySelectorAll('option');
+
+        options.forEach((option) => {
+            if (option.value == projectType) {
+                option.selected = true;
+            }
+        });
     }
 
     function clearDialog() {
@@ -132,16 +155,16 @@ export const dialogHandler = (() => {
         taskDialog.classList.remove('active');
     }
 
-    function showTaskDialog() {
+    function showTaskDialog(projectTitle) {
         mode = 'task';
         headerText.innerHTML = 'Add Task';
         showDialogProjects();
+        setSelectedAttribute(projectTitle);
         showDialog();
     }
 
     function showDialogProjects() {
         const list = projects.getProjectsList();
-        console.log(list)
         clearPreviousProjects();
         renderer.renderDialogProjects(list, fieldset);
     }
@@ -175,14 +198,14 @@ export const UIManager = (() => {
 
     pubsub.subscribe('todoUpdated', todo.updateTodo);
     pubsub.subscribe('todoUpdated', renderTask);
-    // pubsub.subscribe('todoAdded', projects.addTaskToProjects);
+    pubsub.subscribe('todoAdded', projects.addTaskToProjects);
     pubsub.subscribe('projectsUpdated', renderProjects);
 
     // TESTS
-    todo.createTodo('Test', '2023-12-01', '12:24');
-    todo.createTodo('Test 2', '2023-12-03', '12:24');
     projects.createProject('Work', '2023-12-20', '12:00', 'Create a todo app');
     projects.createProject('Workout', '2023-12-15', '08:30', 'Do some cardio');
+    todo.createTodo('Test', '2023-12-01', '12:24', 'Work');
+    todo.createTodo('Test number two', '2023-12-03', '12:24', 'Workout');
 	
 	tasksButton.addEventListener('click', () => {
         renderTask();

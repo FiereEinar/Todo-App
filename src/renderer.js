@@ -50,9 +50,11 @@ export const renderer = {
 		todo.done ? checkbox.checked = true : checkbox.checked = false;
 		checkbox.addEventListener('click', () => {
 			todo.done = !todo.done;
-			todo.done ? container.style.backgroundColor = 'green':
-						container.style.backgroundColor = 'white';
+			todo.done ? container.classList.add('done'):
+					container.classList.remove('done');
 		});
+		todo.done ? container.classList.add('done'):
+					container.classList.remove('done');
 		container.appendChild(checkbox);
 		
 		const todoName = document.createElement('input');
@@ -116,7 +118,7 @@ export const renderer = {
 			function expandProject() {
 				const container = document.querySelector('.main');
 
-				let prev = container.querySelectorAll('h1, div, p, h5, img, header');
+				let prev = container.querySelectorAll('*');
 				prev.forEach((element) => element.remove());
 
 				const headerContainer = document.createElement('header');
@@ -131,7 +133,7 @@ export const renderer = {
 				headerContainer.appendChild(addTask);
 
 				addTask.addEventListener('click', () => {
-					dialogHandler.showTaskDialog();
+					dialogHandler.showTaskDialog(project.title);
 				});
 
 				const description = document.createElement('h5');
@@ -141,22 +143,20 @@ export const renderer = {
 				const date = document.createElement('p');
 				date.innerHTML = project.dueDate;
 				container.appendChild(date);
-
-				const projectTasksContainer = document.createElement('div');
-				projectTasksContainer.classList.add('projectTasksContainer');
-				container.appendChild(projectTasksContainer);
-
-				const tasksContainer = container.querySelector('.projectTasksContainer')
 				
-				generateTasksFromProject(tasksContainer);
+				generateTasksFromProject();
 			}
 
-			function generateTasksFromProject(container) {
+			function generateTasksFromProject() {
 				if (project.tasks.length > 0) {
-					console.log(project.tasks.length)
 					project.tasks.forEach((task) => {
-						renderer.makeTaskComponent(task, container);
-						console.log(task);
+						const container = document.querySelector('.main');
+
+						const projectTasksContainer = document.createElement('div');
+						projectTasksContainer.classList.add('container');
+						container.appendChild(projectTasksContainer);
+
+						renderer.makeTaskComponent(task, projectTasksContainer);
 					});
 				}
 			}
