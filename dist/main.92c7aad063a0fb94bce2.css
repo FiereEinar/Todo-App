@@ -30,8 +30,15 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px;
+    padding: 10px;
     gap: 10px;
+}
+
+.sidebar > .header button {
+    padding: 0 8px;
+    border-radius: 5px;
+    border: 1px solid grey;
+    cursor: pointer;
 }
 
 .sidebar > .header img {
@@ -96,6 +103,7 @@ body {
 
 .sidebar > .projects > h1 {
     margin: 5px 10px;
+    font-size: 1.3rem;
 }
 
 
@@ -161,25 +169,25 @@ body {
 .main > div {
     display: flex;
     flex-wrap: wrap;
-    width: fit-content;
+    width: 100%;
     justify-content: flex-start;
-    align-items: center;
+    align-items: flex-start;
     gap: 5px;
     border: 1px solid white;
     border-radius: 5px;
-    padding: 2px 5px;
+    padding: 2px 5px;  
 }
 
 .main > div:hover {
     border: 1px solid;
 }
 
+
 .main > .done {
     background-color: lightgreen;
 }
 
 .main > div > img {
-    /* border: 1px solid; */
     width: 20px;
     height: 100%;
     cursor: pointer;
@@ -187,12 +195,25 @@ body {
     border-radius: 5px;
     justify-self: flex-end;
 }
-.main > div > input:not(:first-of-type) {
-    width: 120px;
+
+.main > div > input {
+    margin-top: 5px;
+}
+
+.main > div > p {
+    width: 80px;
     background-color: transparent;
     border: none;
-
 }
+
+.main > div > p[title="Title"] {
+    width: 200px;
+}
+
+.main > div > p[title="Due date"] {
+    width: 150px;
+}
+
 
 /* Projects */
 
@@ -203,15 +224,16 @@ body {
     width: 100%;
 }
 
-.main > header > img {
+.main > header img {
     /* border: 1px solid; */
     width: 30px;
     height: 30px;
     padding: 5px;
     border-radius: 50%;
+    cursor: pointer;
 }
 
-.main > header > img:hover {
+.main > header img:hover {
     background-color: #c2c4c4;
 }
 
@@ -225,7 +247,7 @@ body {
     }
     .navButton {
         display: flex;
-        justify-content: flex-end;
+        justify-content: space-between;
         padding: 5px 15px;
         border: 1px solid #a8a9a9;
     }
@@ -254,12 +276,32 @@ body {
         display: block;
     }
 
+    .sidebar > .header h4 {
+        display: none;
+    }
+
     .main {
         overflow: hidden;
         width: 100%;
     }
 
-    .main > div > input[type="time"] {
+    .main > div {
+        justify-content: flex-start;
+    }
+
+    .main > div > .edit {
+        margin-left: auto;
+    }
+
+    .main > div > p[title="Time"] {
+        display: none;
+    }
+
+    .main > div > p[title="Due date"] {
+        display: none;
+    }
+
+    .main > div > p[title="Project"] {
         display: none;
     }
 }

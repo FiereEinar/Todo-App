@@ -5,13 +5,16 @@ import { todo } from "./todo.js";
 import { renderer } from "./renderer.js";
 import { projects } from './projects.js';
 
+import { isFuture } from "date-fns";
+import { isToday } from "date-fns";
+
 export const dialogHandler = (() => {
 	const addTaskButton = document.querySelector('.addTaskButton');
 	const closeDialogButton = document.querySelector('.closeDialog');
 	const submitDialogButton = document.querySelector('.submitDialog');
     const addProjectButton = document.querySelector('.addProjectButton');
     const navButton = document.querySelector('.navButton > img');
-    const backButton = document.querySelector('.sidebar > .header img')
+    const backButton = document.querySelector('.sidebar > .header img');
     
 	const taskDialog = document.querySelector('.addTaskDialog');
 	
@@ -113,13 +116,14 @@ export const dialogHandler = (() => {
 
     function setSelectedAttribute(projectType) {
         const select = document.querySelector('.addTaskDialog form fieldset select');
-        const options = select.querySelectorAll('option');
-
-        options.forEach((option) => {
-            if (option.value == projectType) {
-                option.selected = true;
-            }
-        });
+        if (select !== null) {
+            const options = select.querySelectorAll('option');
+            options.forEach((option) => {
+                if (option.value == projectType) {
+                    option.selected = true;
+                }
+            });
+        }
     }
 
     function clearDialog() {
@@ -191,29 +195,77 @@ export const dialogHandler = (() => {
     }
 })();
 
-export const UIManager = (() => {
+const UIManager = (() => {
 	const tasksButton = document.querySelector('.tasksButton');
     const container = document.querySelector('.main');
     const projectsContainer = document.querySelector('.projectsContainer');
+
+    const todayButton = document.querySelector('.sidebar > .nav > .todayButton');
+    const upcomingButton = document.querySelector('.sidebar > .nav > .upcomingButton');
 
     pubsub.subscribe('todoUpdated', todo.updateTodo);
     pubsub.subscribe('todoUpdated', renderTask);
     pubsub.subscribe('todoAdded', projects.addTaskToProjects);
     pubsub.subscribe('projectsUpdated', renderProjects);
+    pubsub.subscribe('todoDeleted', projects.removeTaskToProjects);
 
     // TESTS
     projects.createProject('Work', '2023-12-20', '12:00', 'Create a todo app');
     projects.createProject('Workout', '2023-12-15', '08:30', 'Do some cardio');
     todo.createTodo('Test', '2023-12-01', '12:24', 'Work');
-    todo.createTodo('Test number two', '2023-12-03', '12:24', 'Workout');
+    todo.createTodo('Test number two', '2024-01-10', '12:24', 'Workout');
+    todo.createTodo('Tes Tes', '2024-04-03', '12:24', 'Work');
+    todo.createTodo('More Tests', '2023-12-09', '12:24', 'Workout');
+    todo.createTodo('Another!!', '2023-12-17', '12:24', 'Workout');
+    todo.createTodo('School activity', '2024-04-03', '12:24', 'none');
+    todo.createTodo('Practice', '2023-12-03', '12:24', 'none');
 	
-	tasksButton.addEventListener('click', () => {
-        renderTask();
-    });
+	tasksButton.addEventListener('click', () => renderAllTasks());
 
-	function renderTask() {
+    todayButton.addEventListener('click', () => renderTasksToday());
+
+    upcomingButton.addEventListener('click', () => renderUpcomingTasks());
+
+    function renderAllTasks() {
         const list = todo.getTodo();
+        renderTask(list);
+    }
 
+    function renderTasksToday() {
+        const list = todo.getTodo();
+        const tasksToday = filterTodayTasks(list);
+        renderTask(tasksToday);
+    }
+
+    function renderUpcomingTasks() {
+        const list = todo.getTodo();
+        const upcomingTasks = filterUpcomingTasks(list);
+        renderTask(upcomingTasks);
+    }
+
+    function filterTodayTasks(list) {
+        const today = [];
+        list.map((item) => {
+            const upcomingDates = isToday(new Date(item.dueDate));
+            if (upcomingDates) {
+                today.push(item);
+            }
+        });
+        return today;
+    }
+
+    function filterUpcomingTasks(list) {
+        const upcoming = [];
+        list.map((item) => {
+            const upcomingDates = isFuture(new Date(item.dueDate));
+            if (upcomingDates) {
+                upcoming.push(item);
+            }
+        });
+        return upcoming;
+    }
+
+	function renderTask(list) {
 		clearScreen(container);
 		renderer.renderTodo(list, container);
 	}
@@ -227,7 +279,9 @@ export const UIManager = (() => {
 	
 	function clearScreen(parent) {
 		let prev = parent.querySelectorAll('*');
-		prev.forEach((element) => element.remove());
+        if (prev != null) {
+            prev.forEach((element) => element.remove());
+        }
 	}
 })();
 

@@ -1,5 +1,6 @@
 import { pubsub } from "./pubsub.js";
 import { dialogHandler } from "./main.js";
+import { projects } from "./projects.js";
 
 import editImg from '../src/assets/edit.png';
 import deleteImg from '../src/assets/delete.png';
@@ -7,7 +8,7 @@ import projectIcon from '../src/assets/empty-folder.png';
 import addTaskIcon from '../src/assets/plus.png';
 
 import { formatDistanceToNow } from 'date-fns';
-import { projects } from "./projects.js";
+import { todo as todoOrigin } from "./todo.js";
 
 export const renderer = {
 	renderTodo: (list, parent) => {
@@ -39,13 +40,10 @@ export const renderer = {
 	},
 	
 	makeTaskComponent: (todo, container) => {
-		// if (todo.title == null) return;
 		container.id = todo.id;
-		// to get rid of that warning that says an input should have an ID
-		const randomNum = Math.floor(Math.random() * 999);
 
 		const checkbox = document.createElement('input');
-		checkbox.id = 'screenValue' + randomNum;
+		checkbox.id = todo.id;
 		checkbox.setAttribute('type', 'checkbox');
 		todo.done ? checkbox.checked = true : checkbox.checked = false;
 		checkbox.addEventListener('click', () => {
@@ -57,32 +55,32 @@ export const renderer = {
 					container.classList.remove('done');
 		container.appendChild(checkbox);
 		
-		const todoName = document.createElement('input');
-		todoName.id = 'name' + randomNum;
-		todoName.value = todo.title;
-		todoName.setAttribute('type', 'text');
-		todoName.disabled = true;
+		const todoName = document.createElement('p');
+		todoName.innerHTML = todo.title;
+		todoName.title = 'Title';
 		container.appendChild(todoName);
 	
+		const dueDate = document.createElement('p');
 		const date = [todo.dueDate, todo.dueTime];
 		const formattedDate = date.join('T');
-		const dueDate = document.createElement('input');
-		dueDate.id = 'date' + randomNum;
-		dueDate.value = formatDistanceToNow(new Date(formattedDate), {addSuffix: true});
-		dueDate.setAttribute('type', 'text');
-		dueDate.disabled = true;
+		dueDate.innerHTML = formatDistanceToNow(new Date(formattedDate), {addSuffix: true});
+		dueDate.title = 'Due date';
 		container.appendChild(dueDate);
 	
-		const dueTime = document.createElement('input');
-		dueTime.id = 'time' + randomNum;
-		dueTime.value = todo.dueTime;
-		dueTime.setAttribute('type', 'time');
-		dueTime.disabled = true;
+		const dueTime = document.createElement('p');
+		dueTime.innerHTML = todo.dueTime;
+		dueTime.title = 'Time';
 		container.appendChild(dueTime);
+
+		const projectType = document.createElement('p');
+		projectType.innerHTML = todo.projectType;
+		projectType.title = 'Project';
+		container.appendChild(projectType);
 	
 		const editBtn = document.createElement('img');
 		editBtn.classList.add('edit');
 		editBtn.src = editImg;
+		editBtn.title = 'Edit';
 		container.appendChild(editBtn);
 	
 		editBtn.addEventListener('click', () => {
@@ -92,7 +90,12 @@ export const renderer = {
 		const deleteBtn = document.createElement('img');
 		deleteBtn.classList.add('delete');
 		deleteBtn.src = deleteImg;
+		deleteBtn.title = 'Delete';
 		container.appendChild(deleteBtn);
+
+		deleteBtn.addEventListener('click', () => {
+			todoOrigin.removeTodo(todo);
+		});
 	},
 
 	editTaskComponent: (editedTask, component) => {
@@ -104,7 +107,10 @@ export const renderer = {
 
 		list.forEach((project) => {
 			const projectContainer = document.createElement('button');
-			projectContainer.addEventListener('click', expandProject);
+			projectContainer.addEventListener('click', () => {
+				// const latestTodoData = todoOrigin.getTodo();
+				expandProject();
+			});
 			parent.appendChild(projectContainer);
 
 			const icon = document.createElement('img');
@@ -128,12 +134,23 @@ export const renderer = {
 				title.innerHTML = project.title;
 				headerContainer.appendChild(title);
 
+				const buttonContainer = document.createElement('div');
+				headerContainer.appendChild(buttonContainer);
+
 				const addTask = document.createElement('img');
 				addTask.src = addTaskIcon;
-				headerContainer.appendChild(addTask);
+				buttonContainer.appendChild(addTask);
 
 				addTask.addEventListener('click', () => {
 					dialogHandler.showTaskDialog(project.title);
+				});
+
+				const deleteTask = document.createElement('img');
+				deleteTask.src = deleteImg;
+				buttonContainer.appendChild(deleteTask);
+
+				deleteTask.addEventListener('click', () => {
+					projects.deleteProject(project);
 				});
 
 				const description = document.createElement('h5');
@@ -164,18 +181,19 @@ export const renderer = {
 	},
 
 	renderDialogProjects: (list, parent) => {
-		if (list.length == 0) return;
-
+		
 		const legend = document.createElement('legend');
 		legend.innerHTML = 'Select a project';
 		parent.appendChild(legend);
-
+		
 		const select = document.createElement('select');
 		select.setAttribute('name', 'project');
 		parent.appendChild(select);
-
+		
 		createOption(); // 'none' option
 		
+		if (list.length == 0) return;
+
 		list.forEach((proj) => {
 			createOption(proj.title);
 		});

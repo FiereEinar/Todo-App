@@ -1,5 +1,5 @@
 import { pubsub } from "./pubsub.js";
-import { Todo } from "./todo.js";
+import { todo } from "./todo.js";
 
 class Project {
     constructor(title, dueDate, dueTime, description) {
@@ -12,6 +12,14 @@ class Project {
 
     addToTasks(item) {
         this.tasks.push(item);
+    }
+
+    updateTasks(newTasksList) {
+        this.tasks = newTasksList;
+    }
+
+    removeTask(item) {
+        this.tasks = this.tasks.filter((task) => task.id != item.id);
     }
 }
 
@@ -37,10 +45,25 @@ export const projects = {
         return projects.projectsList;
     },
 
+    deleteProject: (item) => {
+        todo.removeTasksFromProjects(item);
+        projects.projectsList = projects.projectsList.filter((project) => project.title != item.title);
+        console.log(projects.projectsList);
+        pubsub.publish('projectsUpdated', projects.projectsList);
+    },
+
     addTaskToProjects: (item) => {
         projects.projectsList.map((project) => {
             if (project.title == item.projectType) {
                 project.addToTasks(item);
+            }
+        });
+    },
+
+    removeTaskToProjects: (item) => {
+        projects.projectsList.map((project) => {
+            if (project.title == item.projectType) {
+                project.removeTask(item);
             }
         });
     },

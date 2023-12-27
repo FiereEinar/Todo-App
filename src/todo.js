@@ -1,6 +1,6 @@
 import { pubsub } from "./pubsub.js";
 
-export class Todo {
+class Todo {
     constructor(title, dueDate, dueTime, projectType) {
         this.title = title;
         this.dueDate = dueDate;
@@ -51,12 +51,20 @@ export const todo = {
         return result;
     },
 
+    removeTasksFromProjects: (item) => {
+        todo.todos = todo.todos.filter((task) => task.projectType !== item.title);
+        console.log(todo.todos)
+        pubsub.publish('todoUpdated', todo.todos);
+    },
+
     addTodo: (item) => {
         todo.todos.push(item);
     },
 
     removeTodo: (item) => {
-        todo.todos = todo.todos.filter(obj => obj.title !== item);
+        todo.todos = todo.todos.filter(tdo => tdo.id !== item.id);
+        pubsub.publish('todoDeleted', item);
+        pubsub.publish('todoUpdated', todo.todos);
     },
     
     getTodo: () => {
