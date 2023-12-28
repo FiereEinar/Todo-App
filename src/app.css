@@ -10,6 +10,8 @@
 body {
     display: flex;
     position: relative;
+    width: 100vw;
+    overflow: hidden;
 }
 
 .navButton {
@@ -24,6 +26,7 @@ body {
 
 .sidebar {
     width: 200px;
+    height: 100vh;
     background-color: #a8a9a9;
 }
 
@@ -119,6 +122,7 @@ body {
     display: none;
     padding: 10px;
     background-color: pink;
+    z-index: 100;
 }
 
 .sidebarContainer + .active {
@@ -162,12 +166,15 @@ body {
 
 
 .main {
-    width: fit-content;
+    width: 700px;
     color: black;
     padding: 20px;
+    position: relative;
+    /* overflow: hidden; */
+    height: fit-content;
 }
 
-.main > div {
+.main > .container {
     display: flex;
     flex-wrap: wrap;
     width: 100%;
@@ -179,40 +186,73 @@ body {
     padding: 2px 5px;  
 }
 
-.main > div:hover {
+.main > .container:hover {
     border: 1px solid;
 }
 
-
-.main > .done {
-    background-color: lightgreen;
-}
-
-.main > div > img {
+.main > .container > img {
     width: 20px;
-    height: 100%;
+    height: 20px;
     cursor: pointer;
     padding: 2px;
     border-radius: 5px;
     justify-self: flex-end;
 }
 
-.main > div > input {
+.main > .container > input {
     margin-top: 5px;
 }
 
-.main > div > p {
+.main > .container > p {
     width: 80px;
     background-color: transparent;
     border: none;
 }
 
-.main > div > p[title="Title"] {
+.main > .container > p[title="Title"] {
     width: 200px;
 }
 
-.main > div > p[title="Due date"] {
+.main > .container > p[title="Due date"] {
     width: 150px;
+}
+
+.main > .expanded {
+    position: absolute;
+    background-color: #cdcece;
+    top: 20px;
+    width: 80%;
+    padding: 20px;
+    border-radius: 6px;
+}
+
+.main > .expanded > * {
+    margin: 5px 0;
+}
+
+.main > .expanded > input {
+    position: relative;
+    display: block;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.main > .expanded > input::after {
+    content: 'Checkbox';
+    position: absolute;
+    left: 15px;
+    top: -3px;
+}
+
+.main > .expanded > img {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.main > .done {
+    background-color: lightgreen;
 }
 
 
@@ -238,7 +278,34 @@ body {
     background-color: #c2c4c4;
 }
 
+@keyframes dash {
+    from {
+        transform: translateX(100vw);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
 
+
+
+@media (max-width: 870px) {
+    .main > .container > p[title="Time"] {
+        display: none;
+    }
+}
+
+@media (max-width: 780px) {
+    .main > .container > p[title="Project"] {
+        display: none;
+    }
+}
+
+@media (max-width: 710px) {
+    .main > .container > p[title="Due date"] {
+        display: none;
+    }
+}
 
 @media (max-width: 600px) {
     body {
@@ -257,19 +324,19 @@ body {
         position: absolute;
         width: 100%;
         height: 100vh;
-        display: flex;
+        z-index: 101;
+        display: none;
         justify-content: flex-end;
         overflow: hidden;
-        transform: translateX(100vw);
-        transition: all 1s cubic-bezier(0, 1.18, 0.58, 1);
     }
-
+    
     .active {
-        transform: translateX(0);
+        display: flex;
+        animation: dash 1s cubic-bezier(0, 1.18, 0.58, 1);
     }
 
     .sidebar {
-        z-index: 100;
+        z-index: 102;
         opacity: 1;
     }
 
@@ -282,27 +349,17 @@ body {
     }
 
     .main {
-        overflow: hidden;
+        
         width: 100%;
     }
 
-    .main > div {
+    .main > .container {
         justify-content: flex-start;
     }
 
-    .main > div > .edit {
+    .main > .container > .edit {
         margin-left: auto;
     }
 
-    .main > div > p[title="Time"] {
-        display: none;
-    }
-
-    .main > div > p[title="Due date"] {
-        display: none;
-    }
-
-    .main > div > p[title="Project"] {
-        display: none;
-    }
+    
 }

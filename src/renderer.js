@@ -6,6 +6,8 @@ import editImg from '../src/assets/edit.png';
 import deleteImg from '../src/assets/delete.png';
 import projectIcon from '../src/assets/empty-folder.png';
 import addTaskIcon from '../src/assets/plus.png';
+import expandImg from '../src/assets/expand.png';
+import backImg from '../src/assets/back.png';
 
 import { formatDistanceToNow } from 'date-fns';
 import { todo as todoOrigin } from "./todo.js";
@@ -96,10 +98,105 @@ export const renderer = {
 		deleteBtn.addEventListener('click', () => {
 			todoOrigin.removeTodo(todo);
 		});
+
+		const expandBtn = document.createElement('img');
+		expandBtn.classList.add('expand');
+		expandBtn.src = expandImg;
+		expandBtn.title = 'Expand';
+		container.appendChild(expandBtn);
+
+		expandBtn.addEventListener('click', () => {
+			expandTask();
+		});
+
+		function expandTask() {
+			const mainContainer = document.querySelector('.main');
+
+			const expandedContainer = document.createElement('div');
+			expandedContainer.classList.add('expanded');
+			mainContainer.appendChild(expandedContainer);
+
+			renderer.makeExpandedTaskComponent(todo, expandedContainer);
+		}
+	},
+
+	makeExpandedTaskComponent: (todo, container) => {
+		container.id = todo.id;
+
+		const backButton = document.createElement('img');
+		backButton.classList.add('backButton');
+		backButton.src = backImg;
+		backButton.title = 'Back';
+		container.appendChild(backButton);
+	
+		backButton.addEventListener('click', () => {
+			renderer.removeExpandedComponent();
+		});
+
+		const checkbox = document.createElement('input');
+		checkbox.id = todo.id + todo.title;
+		checkbox.innerHTML = 'Checkbox'
+		checkbox.setAttribute('type', 'checkbox');
+		todo.done ? checkbox.checked = true : checkbox.checked = false;
+		checkbox.addEventListener('click', () => {
+			todo.done = !todo.done;
+			todo.done ? container.classList.add('done'):
+					container.classList.remove('done');
+		});
+		todo.done ? container.classList.add('done'):
+					container.classList.remove('done');
+		container.appendChild(checkbox);
+		
+		const todoName = document.createElement('p');
+		todoName.innerHTML = 'Title: ' + todo.title;
+		todoName.title = 'Title';
+		container.appendChild(todoName);
+	
+		const dueDate = document.createElement('p');
+		const date = [todo.dueDate, todo.dueTime];
+		const formattedDate = date.join('T');
+		dueDate.innerHTML = 'Due: ' + formatDistanceToNow(new Date(formattedDate), {addSuffix: true});
+		dueDate.title = 'Due date';
+		container.appendChild(dueDate);
+	
+		const dueTime = document.createElement('p');
+		dueTime.innerHTML = 'Time: ' + todo.dueTime;
+		dueTime.title = 'Time';
+		container.appendChild(dueTime);
+
+		const projectType = document.createElement('p');
+		projectType.innerHTML = 'Project Type: ' + todo.projectType;
+		projectType.title = 'Project';
+		container.appendChild(projectType);
+	
+		const editBtn = document.createElement('img');
+		editBtn.classList.add('edit');
+		editBtn.src = editImg;
+		editBtn.title = 'Edit';
+		container.appendChild(editBtn);
+	
+		editBtn.addEventListener('click', () => {
+			dialogHandler.editTask(todo);
+		});
+	
+		const deleteBtn = document.createElement('img');
+		deleteBtn.classList.add('delete');
+		deleteBtn.src = deleteImg;
+		deleteBtn.title = 'Delete';
+		container.appendChild(deleteBtn);
+
+		deleteBtn.addEventListener('click', () => {
+			todoOrigin.removeTodo(todo);
+		});
 	},
 
 	editTaskComponent: (editedTask, component) => {
 		renderer.makeTaskComponent(editedTask, component)
+	},
+
+	removeExpandedComponent: () => {
+		const expandedComponent = document.querySelectorAll('.main > .expanded');
+		expandedComponent.forEach((component) => component.remove());
 	},
 
 	renderProjects: (list, parent) => {
@@ -108,7 +205,6 @@ export const renderer = {
 		list.forEach((project) => {
 			const projectContainer = document.createElement('button');
 			projectContainer.addEventListener('click', () => {
-				// const latestTodoData = todoOrigin.getTodo();
 				expandProject();
 			});
 			parent.appendChild(projectContainer);

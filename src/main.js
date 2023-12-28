@@ -67,39 +67,40 @@ export const dialogHandler = (() => {
         clearChildElements(description);
         clearDialog();
         hideDialog();
-
-        function analyzeMode() {
-            switch (mode) {
-                case 'task':
-                    makeTodo();
-                    break;
-                case 'project':
-                    makeProject();
-                    break;
-                case 'edit':
-                    editTodo();
-                    break;
-            }
-        }
-
-        function makeTodo() {
-            const select = document.querySelector('.addTaskDialog form fieldset select');
-            todo.createTodo(title.value, dueDate.value, dueTime.value, select.value);
-        }
-
-        function makeProject() {
-            const description = document.querySelector('.addTaskDialog #description');
-            projects.createProject(title.value, dueDate.value, dueTime.value, description.value);
-        }
-
-        function editTodo() {
-            const container = document.querySelector('.main');
-            const updatedTodo = todo.makeTodo(title.value, dueDate.value, dueTime.value, select.value);
-            const editedComponent = container.querySelector('#' + editedComponentId);
-            clearChildElements(editedComponent);
-            renderer.editTaskComponent(updatedTodo, editedComponent);
-        }
     });
+
+    function analyzeMode() {
+        switch (mode) {
+            case 'task':
+                makeTodo();
+                break;
+            case 'project':
+                makeProject();
+                break;
+            case 'edit':
+                editTodo();
+                break;
+        }
+    }
+
+    function makeTodo() {
+        const select = document.querySelector('.addTaskDialog form fieldset select');
+        todo.createTodo(title.value, dueDate.value, dueTime.value, select.value);
+    }
+
+    function makeProject() {
+        const description = document.querySelector('.addTaskDialog #description');
+        projects.createProject(title.value, dueDate.value, dueTime.value, description.value);
+    }
+
+    function editTodo() {
+        const select = document.querySelector('.addTaskDialog form fieldset select');
+        const container = document.querySelector('.main');
+        const updatedTodo = todo.makeTodo(title.value, dueDate.value, dueTime.value, select.value);
+        const editedComponent = container.querySelector('#' + editedComponentId);
+        clearChildElements(editedComponent);
+        renderer.editTaskComponent(updatedTodo, editedComponent);
+    }
 
     function editTask(task) {
         mode = 'edit';
