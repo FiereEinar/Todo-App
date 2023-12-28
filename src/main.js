@@ -211,15 +211,15 @@ const UIManager = (() => {
     pubsub.subscribe('todoDeleted', projects.removeTaskToProjects);
 
     // TESTS
-    projects.createProject('Work', '2023-12-20', '12:00', 'Create a todo app');
-    projects.createProject('Workout', '2023-12-15', '08:30', 'Do some cardio');
-    todo.createTodo('Test', '2023-12-01', '12:24', 'Work');
-    todo.createTodo('Test number two', '2024-01-10', '12:24', 'Workout');
-    todo.createTodo('Tes Tes', '2024-04-03', '12:24', 'Work');
-    todo.createTodo('More Tests', '2023-12-09', '12:24', 'Workout');
-    todo.createTodo('Another!!', '2023-12-17', '12:24', 'Workout');
-    todo.createTodo('School activity', '2024-04-03', '12:24', 'none');
-    todo.createTodo('Practice', '2023-12-03', '12:24', 'none');
+    projects.createProject('Website', '2024-01-03', '08:00', 'Make a website for Intro to Computing subject');
+    projects.createProject('Documentation', '2023-12-29', '12:00', 'Write a documentation for the website (IT Fundamentals project)');
+    todo.createTodo('Make a landing page', '2023-12-21', '07:24', 'Website');
+    todo.createTodo('Make a blog page', '2023-12-24', '09:24', 'Website');
+    todo.createTodo('Make a flex page', '2023-12-27', '12:24', 'Website');
+    todo.createTodo('Write the intro', '2023-12-09', '08:24', 'Documentation');
+    todo.createTodo('Write the last part', '2023-12-17', '08:25', 'Documentation');
+    todo.createTodo('Make wireframes', '2024-12-27', '12:24', 'Documentation');
+    todo.createTodo('Patuli', '2024-01-01', '08:30', 'none');
 	
 	tasksButton.addEventListener('click', () => renderAllTasks());
 

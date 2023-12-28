@@ -168,26 +168,6 @@ export const renderer = {
 		projectType.innerHTML = 'Project Type: ' + todo.projectType;
 		projectType.title = 'Project';
 		container.appendChild(projectType);
-	
-		const editBtn = document.createElement('img');
-		editBtn.classList.add('edit');
-		editBtn.src = editImg;
-		editBtn.title = 'Edit';
-		container.appendChild(editBtn);
-	
-		editBtn.addEventListener('click', () => {
-			dialogHandler.editTask(todo);
-		});
-	
-		const deleteBtn = document.createElement('img');
-		deleteBtn.classList.add('delete');
-		deleteBtn.src = deleteImg;
-		deleteBtn.title = 'Delete';
-		container.appendChild(deleteBtn);
-
-		deleteBtn.addEventListener('click', () => {
-			todoOrigin.removeTodo(todo);
-		});
 	},
 
 	editTaskComponent: (editedTask, component) => {

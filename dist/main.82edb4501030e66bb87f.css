@@ -1,4 +1,4 @@
-@import url(https://fonts.googleapis.com/css2?family=Edu+TAS+Beginner&family=Noto+Sans:wght@200&family=Nunito+Sans:opsz,wght@6..12,200&family=Poppins:wght@200&family=Roboto:wght@100&family=Signika+Negative:wght@300&display=swap);
+@import url(https://fonts.googleapis.com/css2?family=Edu+TAS+Beginner&family=Montserrat&family=Noto+Sans:wght@200&family=Nunito+Sans:opsz,wght@6..12,200&family=Poppins:wght@300;400&family=Roboto:wght@100&family=Signika+Negative:wght@300&display=swap);
 * {
     margin: 0;
     padding: 0;
@@ -8,44 +8,62 @@
 
 body {
     display: flex;
+    flex-direction: column;
     position: relative;
     width: 100vw;
-    overflow: hidden;
+    height: 100vh;
+    /* overflow: hidden; */
 }
 
 .navButton {
-    display: none;
+    color: #fff;
+    background-color: #333;
+    display: flex;
     width: 100%;
+    padding: 20px;
+    align-items: center;
 }
 
 .navButton img {
     width: 25px;
+    height: 25px;
     cursor: pointer;
+    filter: invert(1);
+    display: none;
 }
 
+
+
+.contentContainer {
+    display: flex;
+    height: 85vh;
+}
+
+
+
+.sidebarContainer {
+    width: 250px;
+}
+
+
+
 .sidebar {
-    width: 200px;
-    height: 100vh;
-    background-color: #a8a9a9;
+    width: 250px;
+    height: 100%;
+    background-color: #ddd;
+    padding: 10px 20px;
 }
 
 .sidebar > .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
-    gap: 10px;
-}
-
-.sidebar > .header button {
-    padding: 0 8px;
-    border-radius: 5px;
-    border: 1px solid grey;
-    cursor: pointer;
+    padding: 10px 10px 20px 5px;
 }
 
 .sidebar > .header img {
-    width: 25px;
+    width: 20px;
+    height: 20px;
     cursor: pointer;
     display: none;
 }
@@ -62,10 +80,11 @@ body {
     justify-content: flex-start;
     align-items: center;
     width: 100%;
-    background-color: none;
+    background-color: #ddd;
     border: none;
     padding: 8px;
     gap: 8px;
+    border-radius: 5px;
 }
 
 .sidebar > .nav > button:hover,
@@ -83,11 +102,12 @@ body {
     justify-content: flex-start;
     align-items: center;
     width: 100%;
-    background-color: none;
+    background-color: #ddd;
     border: none;
     padding: 8px;
     gap: 8px;
     margin-bottom: 5px;
+    border-radius: 5px;
 }
 
 .sidebar > .projects > button:hover {
@@ -111,17 +131,25 @@ body {
 
 
 
+
 /* dialog section */
 
 .addTaskDialog {
     border: 1px solid black;
     position: absolute;
-    left: 15%;
-    top: 10%;
+    left: 18%;
+    top: 15%;
     display: none;
     padding: 10px;
-    background-color: pink;
+    border-radius: 5px;
+    background-color: #cdcece;
     z-index: 100;
+}
+
+/* dialog */
+.contentContainer .active:nth-child(2) {
+    display: flex;
+    animation: grow 0.8s cubic-bezier(0.39, 0.02, 0, 1.11);
 }
 
 .sidebarContainer + .active {
@@ -167,9 +195,8 @@ body {
 .main {
     width: 700px;
     color: black;
-    padding: 20px;
+    padding: 30px;
     position: relative;
-    /* overflow: hidden; */
     height: fit-content;
 }
 
@@ -180,13 +207,12 @@ body {
     justify-content: flex-start;
     align-items: flex-start;
     gap: 5px;
-    border: 1px solid white;
     border-radius: 5px;
     padding: 2px 5px;  
 }
 
-.main > .container:hover {
-    border: 1px solid;
+.main > .container:not(.done):hover {
+    background-color: #cdcece;
 }
 
 .main > .container > img {
@@ -204,6 +230,9 @@ body {
 
 .main > .container > p {
     width: 80px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     background-color: transparent;
     border: none;
 }
@@ -220,9 +249,11 @@ body {
     position: absolute;
     background-color: #cdcece;
     top: 20px;
-    width: 80%;
+    width: 400px;
     padding: 20px;
     border-radius: 6px;
+    border: 1px solid;
+    animation: grow 0.8s cubic-bezier(0.39, 0.02, 0, 1.11);
 }
 
 .main > .expanded > * {
@@ -243,7 +274,7 @@ body {
     top: -3px;
 }
 
-.main > .expanded > img {
+.main > .expanded img {
     width: 20px;
     height: 20px;
     margin-right: 10px;
@@ -277,6 +308,32 @@ body {
     background-color: #c2c4c4;
 }
 
+
+
+footer {
+    height: 10vh;
+    display: flex;
+    font-size: 0.8rem;
+    justify-content: center;
+    align-items: center;
+    background-color: #333;
+    color: #fff;
+    gap: 10px;
+}
+
+footer a img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    transition: all 1s ease;
+}
+
+footer a img:hover {
+    transform: rotate(720deg);
+}
+
+
+
 @keyframes dash {
     from {
         transform: translateX(100vw);
@@ -286,37 +343,52 @@ body {
     }
 }
 
+@keyframes grow {
+    from {
+        transform: scale(0.2);
+        opacity: 0;
+    }
+    tp {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
 
 
-@media (max-width: 870px) {
+
+@media (max-width: 940px) {
     .main > .container > p[title="Time"] {
         display: none;
     }
 }
 
-@media (max-width: 780px) {
+@media (max-width: 860px) {
     .main > .container > p[title="Project"] {
         display: none;
     }
 }
 
-@media (max-width: 710px) {
+@media (max-width: 770px) {
     .main > .container > p[title="Due date"] {
         display: none;
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 620px) {
     body {
         display: flex;
         flex-direction: column;
         overflow: hidden;
     }
     .navButton {
-        display: flex;
+        /* display: flex; */
         justify-content: space-between;
-        padding: 5px 15px;
+        padding: 10px 15px;
         border: 1px solid #a8a9a9;
+    }
+
+    .navButton img {
+        display: block;
     }
 
     .sidebarContainer {
@@ -327,9 +399,11 @@ body {
         display: none;
         justify-content: flex-end;
         overflow: hidden;
+        top: 0;
     }
     
-    .active {
+    /* sidebar */
+    .contentContainer .active:nth-child(1) {
         display: flex;
         animation: dash 1s cubic-bezier(0, 1.18, 0.58, 1);
     }
@@ -340,6 +414,7 @@ body {
     }
 
     .sidebar > .header img {
+
         display: block;
     }
 
