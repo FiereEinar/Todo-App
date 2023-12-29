@@ -306,10 +306,8 @@ const UIManager = (() => {
             if (project.title == container.id) {
                 renderer.addRenderingMethod(project);
                 project.renderSelfTasks();
-                return;
             }
         });
-        renderAllTasks();
     }
 
     function setMainId(newId) {
