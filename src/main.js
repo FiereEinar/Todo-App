@@ -28,7 +28,7 @@ export const dialogHandler = (() => {
     const sidebarContainer = document.querySelector('.sidebarContainer');
 
     let mode = '';
-    let editedComponentId = ''; // for editing
+    let editedTask; // for editing
 
     navButton.addEventListener('click', () => {
         sidebarContainer.classList.add('active');
@@ -96,16 +96,19 @@ export const dialogHandler = (() => {
     function editTodo() {
         const select = document.querySelector('.addTaskDialog form fieldset select');
         const container = document.querySelector('.main');
+        const editedComponent = container.querySelector('#' + editedTask.id);
         const updatedTodo = todo.makeTodo(title.value, dueDate.value, dueTime.value, select.value);
-        const editedComponent = container.querySelector('#' + editedComponentId);
+
         clearChildElements(editedComponent);
         renderer.editTaskComponent(updatedTodo, editedComponent);
+        projects.updateTaskToProjects(editedTask, updatedTodo);
+        todo.updateEditedTask(editedTask.id, updatedTodo);
     }
 
     function editTask(task) {
         mode = 'edit';
         headerText.innerHTML = 'Edit';
-        editedComponentId = task.id;
+        editedTask = task;
         
         title.value = task.title;
         dueDate.value = task.dueDate;
@@ -196,6 +199,60 @@ export const dialogHandler = (() => {
     }
 })();
 
+const localStorageHandler = (() => {
+    pubsub.subscribe('todoUpdated', updateTasksFromLocal);
+    pubsub.subscribe('projectsUpdated', updateProjectsFromLocal);
+
+    function getProjectsFromLocal() {
+        let parsedProjectsData = JSON.parse(localStorage.getItem('localProjectsData'));
+        if (parsedProjectsData == null) {
+            addProjectsToLocal();
+        } else {
+            projects.updateProjectsList(parsedProjectsData);
+        }
+    }
+
+    function addProjectsToLocal() {
+        projects.createProject('Website', '2024-01-03', '08:00', 'Make a website for Intro to Computing subject');
+        projects.createProject('Documentation', '2023-12-29', '12:00', 'Write a documentation for the website (IT Fundamentals project)');
+        localStorage.setItem('localProjectsData', JSON.stringify(projects.getProjectsList()));
+    }
+
+    function getTasksFromLocal() {
+        let parsedTasksData = JSON.parse(localStorage.getItem('localTasksData'));
+        if (parsedTasksData == null) {
+            addTasksToLocal();
+        } else {
+            todo.updateTodo(parsedTasksData);
+        }
+    }
+
+    function addTasksToLocal() {
+        todo.createTodo('Make a landing page', '2023-12-21', '07:24', 'Website');
+        todo.createTodo('Make a blog page', '2023-12-24', '09:24', 'Website');
+        todo.createTodo('Make a flex page', '2023-12-27', '12:24', 'Website');
+        todo.createTodo('Write the intro', '2023-12-09', '08:24', 'Documentation');
+        todo.createTodo('Write the last part', '2023-12-17', '08:25', 'Documentation');
+        todo.createTodo('Make wireframes', '2024-12-27', '12:24', 'Documentation');
+        todo.createTodo('Patuli', '2024-01-01', '08:30', 'none');
+        localStorage.setItem('localTasksData', JSON.stringify(todo.getTodo()));
+    }
+
+    function updateTasksFromLocal(newData) {
+        localStorage.setItem('localTasksData', JSON.stringify(newData));
+    }
+
+    function updateProjectsFromLocal(newData) {
+        localStorage.setItem('localProjectsData', JSON.stringify(newData));
+    }
+
+    return {
+        getProjectsFromLocal: getProjectsFromLocal,
+        getTasksFromLocal: getTasksFromLocal,
+        updateTasksFromLocal: updateTasksFromLocal,
+    }
+})();
+
 const UIManager = (() => {
 	const tasksButton = document.querySelector('.tasksButton');
     const container = document.querySelector('.main');
@@ -205,40 +262,75 @@ const UIManager = (() => {
     const upcomingButton = document.querySelector('.sidebar > .nav > .upcomingButton');
 
     pubsub.subscribe('todoUpdated', todo.updateTodo);
-    pubsub.subscribe('todoUpdated', renderTask);
+    pubsub.subscribe('todoUpdated', updateScreen);
+    pubsub.subscribe('projectsUpdated', updateScreen);
     pubsub.subscribe('todoAdded', projects.addTaskToProjects);
     pubsub.subscribe('projectsUpdated', renderProjects);
     pubsub.subscribe('todoDeleted', projects.removeTaskToProjects);
+    pubsub.subscribe('todoStatusChanged', projects.updateTaskStatusFromProjects);
 
-    // TESTS
-    projects.createProject('Website', '2024-01-03', '08:00', 'Make a website for Intro to Computing subject');
-    projects.createProject('Documentation', '2023-12-29', '12:00', 'Write a documentation for the website (IT Fundamentals project)');
-    todo.createTodo('Make a landing page', '2023-12-21', '07:24', 'Website');
-    todo.createTodo('Make a blog page', '2023-12-24', '09:24', 'Website');
-    todo.createTodo('Make a flex page', '2023-12-27', '12:24', 'Website');
-    todo.createTodo('Write the intro', '2023-12-09', '08:24', 'Documentation');
-    todo.createTodo('Write the last part', '2023-12-17', '08:25', 'Documentation');
-    todo.createTodo('Make wireframes', '2024-12-27', '12:24', 'Documentation');
-    todo.createTodo('Patuli', '2024-01-01', '08:30', 'none');
-	
 	tasksButton.addEventListener('click', () => renderAllTasks());
 
     todayButton.addEventListener('click', () => renderTasksToday());
 
     upcomingButton.addEventListener('click', () => renderUpcomingTasks());
 
+    init();
+    
+    function init() {
+        localStorageHandler.getProjectsFromLocal();
+        localStorageHandler.getTasksFromLocal();
+        renderAllTasks();
+        renderProjects();
+    }
+
+    function updateScreen(data) {
+        switch (container.id) {
+            case 'Tasks':
+                renderAllTasks();
+                break;
+            case 'Today':
+                renderTasksToday();
+                break;
+            case 'Upcoming':
+                renderUpcomingTasks()
+                break;
+            default:
+                findOpenedProject(data);
+                break;
+        }
+    }
+
+    function findOpenedProject(data) {
+        data.map((project) => {
+            if (project.title == container.id) {
+                renderer.addRenderingMethod(project);
+                project.renderSelfTasks();
+                return;
+            }
+        });
+        renderAllTasks();
+    }
+
+    function setMainId(newId) {
+        container.id = newId;
+    }
+
     function renderAllTasks() {
+        setMainId('Tasks');
         const list = todo.getTodo();
         renderTask(list);
     }
 
     function renderTasksToday() {
+        setMainId('Today');
         const list = todo.getTodo();
         const tasksToday = filterTodayTasks(list);
         renderTask(tasksToday);
     }
 
     function renderUpcomingTasks() {
+        setMainId('Upcoming');
         const list = todo.getTodo();
         const upcomingTasks = filterUpcomingTasks(list);
         renderTask(upcomingTasks);

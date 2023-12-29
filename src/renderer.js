@@ -19,13 +19,14 @@ export const renderer = {
 		
 		function checkList() {
 			const header = document.createElement('h1');
+			const mainContainer = document.querySelector('.main');
 
 			if (list.length == 0) {
 				header.innerHTML = 'Nothing to see here...';
 				parent.appendChild(header);
 				return;
 			} else {
-				header.innerHTML = 'Tasks';
+				header.innerHTML = mainContainer.id;
 				parent.appendChild(header);
 			}
 		}
@@ -49,9 +50,9 @@ export const renderer = {
 		checkbox.setAttribute('type', 'checkbox');
 		todo.done ? checkbox.checked = true : checkbox.checked = false;
 		checkbox.addEventListener('click', () => {
-			todo.done = !todo.done;
-			todo.done ? container.classList.add('done'):
-					container.classList.remove('done');
+			let todoState = todoOrigin.changeTodoState(todo)
+			todoState ? container.classList.add('done'):
+						container.classList.remove('done');
 		});
 		todo.done ? container.classList.add('done'):
 					container.classList.remove('done');
@@ -185,7 +186,7 @@ export const renderer = {
 		list.forEach((project) => {
 			const projectContainer = document.createElement('button');
 			projectContainer.addEventListener('click', () => {
-				expandProject();
+				renderer.expandProjectMethod(project);
 			});
 			parent.appendChild(projectContainer);
 
@@ -196,64 +197,65 @@ export const renderer = {
 			const projectTitle = document.createElement('h4');
 			projectTitle.innerHTML = project.title;
 			projectContainer.appendChild(projectTitle);
-
-			function expandProject() {
-				const container = document.querySelector('.main');
-
-				let prev = container.querySelectorAll('*');
-				prev.forEach((element) => element.remove());
-
-				const headerContainer = document.createElement('header');
-				container.appendChild(headerContainer);
-
-				const title = document.createElement('h1');
-				title.innerHTML = project.title;
-				headerContainer.appendChild(title);
-
-				const buttonContainer = document.createElement('div');
-				headerContainer.appendChild(buttonContainer);
-
-				const addTask = document.createElement('img');
-				addTask.src = addTaskIcon;
-				buttonContainer.appendChild(addTask);
-
-				addTask.addEventListener('click', () => {
-					dialogHandler.showTaskDialog(project.title);
-				});
-
-				const deleteTask = document.createElement('img');
-				deleteTask.src = deleteImg;
-				buttonContainer.appendChild(deleteTask);
-
-				deleteTask.addEventListener('click', () => {
-					projects.deleteProject(project);
-				});
-
-				const description = document.createElement('h5');
-				description.innerHTML = project.description;
-				container.appendChild(description);
-
-				const date = document.createElement('p');
-				date.innerHTML = project.dueDate;
-				container.appendChild(date);
-				
-				generateTasksFromProject();
-			}
-
-			function generateTasksFromProject() {
-				if (project.tasks.length > 0) {
-					project.tasks.forEach((task) => {
-						const container = document.querySelector('.main');
-
-						const projectTasksContainer = document.createElement('div');
-						projectTasksContainer.classList.add('container');
-						container.appendChild(projectTasksContainer);
-
-						renderer.makeTaskComponent(task, projectTasksContainer);
-					});
-				}
-			}
 		});
+	},
+
+	expandProjectMethod: (project) => {
+		const container = document.querySelector('.main');
+		container.id = project.title;
+
+		let prev = container.querySelectorAll('*');
+		prev.forEach((element) => element.remove());
+
+		const headerContainer = document.createElement('header');
+		container.appendChild(headerContainer);
+
+		const title = document.createElement('h1');
+		title.innerHTML = project.title;
+		headerContainer.appendChild(title);
+
+		const buttonContainer = document.createElement('div');
+		headerContainer.appendChild(buttonContainer);
+
+		const addTask = document.createElement('img');
+		addTask.src = addTaskIcon;
+		buttonContainer.appendChild(addTask);
+
+		addTask.addEventListener('click', () => {
+			dialogHandler.showTaskDialog(project.title);
+		});
+
+		const deleteTask = document.createElement('img');
+		deleteTask.src = deleteImg;
+		buttonContainer.appendChild(deleteTask);
+
+		deleteTask.addEventListener('click', () => {
+			projects.deleteProject(project);
+		});
+
+		const description = document.createElement('h5');
+		description.innerHTML = project.description;
+		container.appendChild(description);
+
+		const date = document.createElement('p');
+		date.innerHTML = project.dueDate;
+		container.appendChild(date);
+		
+		generateTasksFromProject();
+
+		function generateTasksFromProject() {
+			if (project.tasks.length > 0) {
+				project.tasks.forEach((task) => {
+					const container = document.querySelector('.main');
+
+					const projectTasksContainer = document.createElement('div');
+					projectTasksContainer.classList.add('container');
+					container.appendChild(projectTasksContainer);
+
+					renderer.makeTaskComponent(task, projectTasksContainer);
+				});
+			}
+		}
 	},
 
 	renderDialogProjects: (list, parent) => {
@@ -281,4 +283,11 @@ export const renderer = {
 			select.appendChild(option);			
 		}
 	},
+
+	addRenderingMethod: (object) => {
+		object.renderSelfTasks = function() {
+			renderer.expandProjectMethod(object);
+		}
+		console.log(object);
+    },
 }

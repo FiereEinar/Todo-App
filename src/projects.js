@@ -9,18 +9,6 @@ class Project {
         this.description = description;
         this.tasks = [];
     }
-
-    addToTasks(item) {
-        this.tasks.push(item);
-    }
-
-    updateTasks(newTasksList) {
-        this.tasks = newTasksList;
-    }
-
-    removeTask(item) {
-        this.tasks = this.tasks.filter((task) => task.id != item.id);
-    }
 }
 
 export const projects = {
@@ -45,17 +33,21 @@ export const projects = {
         return projects.projectsList;
     },
 
+    updateProjectsList: (newData) => {
+        projects.projectsList = newData;
+    },
+
     deleteProject: (item) => {
         todo.removeTasksFromProjects(item);
         projects.projectsList = projects.projectsList.filter((project) => project.title != item.title);
-        console.log(projects.projectsList);
         pubsub.publish('projectsUpdated', projects.projectsList);
     },
 
     addTaskToProjects: (item) => {
         projects.projectsList.map((project) => {
             if (project.title == item.projectType) {
-                project.addToTasks(item);
+                projects.addTaskFromProject(project, item);
+                pubsub.publish('projectsUpdated', projects.projectsList);
             }
         });
     },
@@ -63,8 +55,33 @@ export const projects = {
     removeTaskToProjects: (item) => {
         projects.projectsList.map((project) => {
             if (project.title == item.projectType) {
-                project.removeTask(item);
+                projects.removeTaskFromProject(project, item);
+                pubsub.publish('projectsUpdated', projects.projectsList);
             }
+        });
+    },
+
+    addTaskFromProject: (project, task) => {
+        project.tasks.push(task);
+    },
+
+    removeTaskFromProject: (project, task) => {
+        project.tasks = project.tasks.filter((object) => object.id != task.id);
+    },
+
+    updateTaskToProjects: (editedItem, newItem) => {
+        projects.removeTaskToProjects(editedItem);
+        projects.addTaskToProjects(newItem);
+    },
+
+    updateTaskStatusFromProjects: (newData) => {
+        projects.projectsList.map((project) => {
+            project.tasks.map((task) => {
+                if (task.id == newData.id) {
+                    todo.updateTaskFromProjects(task, newData);
+                    pubsub.publish('projectsUpdated', projects.projectsList);
+                }
+            });
         });
     },
 }

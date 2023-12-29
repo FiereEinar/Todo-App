@@ -9,6 +9,7 @@ class Todo {
         this.done = false;
         this.id = '';
     }
+
     setId(newId) {
         this.id = newId;
     }
@@ -53,7 +54,6 @@ export const todo = {
 
     removeTasksFromProjects: (item) => {
         todo.todos = todo.todos.filter((task) => task.projectType !== item.title);
-        console.log(todo.todos)
         pubsub.publish('todoUpdated', todo.todos);
     },
 
@@ -65,6 +65,32 @@ export const todo = {
         todo.todos = todo.todos.filter(tdo => tdo.id !== item.id);
         pubsub.publish('todoDeleted', item);
         pubsub.publish('todoUpdated', todo.todos);
+    },
+
+    updateEditedTask: (id, item) => {
+        todo.todos.forEach((task) => {
+            if (task.id == id) {
+                todo.updateTaskFromProjects(task, item);
+                pubsub.publish('todoUpdated', todo.todos);
+            }
+        });
+    },
+
+    updateTaskFromProjects: (currentTask, newData) => {
+        // TODO: optimize this
+        currentTask.title = newData.title;
+        currentTask.dueDate = newData.dueDate;
+        currentTask.dueTime = newData.dueTime;
+        currentTask.projectType = newData.projectType;
+        currentTask.done = newData.done;
+        currentTask.id = newData.id;
+    },
+
+    changeTodoState: (item) => {
+        item.done = !item.done;
+        pubsub.publish('todoUpdated', todo.todos);
+        pubsub.publish('todoStatusChanged', item);
+        return item.done;
     },
     
     getTodo: () => {
