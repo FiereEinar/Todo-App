@@ -359,25 +359,25 @@ footer a img:hover {
 
 
 
-@media (max-width: 960px) {
+@media (max-width: 970px) {
     .main > .container > p[title="Time"] {
         display: none;
     }
 }
 
-@media (max-width: 870px) {
+@media (max-width: 890px) {
     .main > .container > p[title="Project"] {
         display: none;
     }
 }
 
-@media (max-width: 790px) {
+@media (max-width: 800px) {
     .main > .container > p[title="Due date"] {
         display: none;
     }
 }
 
-@media (max-width: 630px) {
+@media (max-width: 650px) {
     body {
         display: flex;
         flex-direction: column;

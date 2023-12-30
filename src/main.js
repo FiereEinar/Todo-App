@@ -213,6 +213,7 @@ const localStorageHandler = (() => {
     }
 
     function addProjectsToLocal() {
+        // DEMO
         projects.createProject('Website', '2024-01-03', '08:00', 'Make a website for Intro to Computing subject');
         projects.createProject('Documentation', '2023-12-29', '12:00', 'Write a documentation for the website (IT Fundamentals project)');
         localStorage.setItem('localProjectsData', JSON.stringify(projects.getProjectsList()));
@@ -228,6 +229,7 @@ const localStorageHandler = (() => {
     }
 
     function addTasksToLocal() {
+        // DEMO
         todo.createTodo('Make a landing page', '2023-12-21', '07:24', 'Website');
         todo.createTodo('Make a blog page', '2023-12-24', '09:24', 'Website');
         todo.createTodo('Make a flex page', '2023-12-27', '12:24', 'Website');
@@ -268,6 +270,7 @@ const UIManager = (() => {
     pubsub.subscribe('projectsUpdated', renderProjects);
     pubsub.subscribe('todoDeleted', projects.removeTaskToProjects);
     pubsub.subscribe('todoStatusChanged', projects.updateTaskStatusFromProjects);
+    pubsub.subscribe('todoStatusChanged', todo.updateTodoStatusInTasks);
 
 	tasksButton.addEventListener('click', () => renderAllTasks());
 

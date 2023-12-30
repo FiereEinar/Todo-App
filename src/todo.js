@@ -100,4 +100,12 @@ export const todo = {
     updateTodo: (newList) => {
         todo.todos = newList;
     },
+
+    updateTodoStatusInTasks: (item) => {
+        todo.todos.map((task) => {
+            if (task.id == item.id) {
+                task.done = item.done;
+            }
+        });
+    },
 }
