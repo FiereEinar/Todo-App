@@ -127,6 +127,7 @@ export const renderer = {
 		const backButton = document.createElement('img');
 		backButton.classList.add('backButton');
 		backButton.src = backImg;
+		backButton.alt = 'back';
 		backButton.title = 'Back';
 		container.appendChild(backButton);
 	
@@ -134,19 +135,14 @@ export const renderer = {
 			renderer.removeExpandedComponent();
 		});
 
-		const checkbox = document.createElement('input');
-		checkbox.id = todo.id + todo.title;
-		checkbox.innerHTML = 'Checkbox'
-		checkbox.setAttribute('type', 'checkbox');
-		todo.done ? checkbox.checked = true : checkbox.checked = false;
-		checkbox.addEventListener('click', () => {
-			todo.done = !todo.done;
-			todo.done ? container.classList.add('done'):
-					container.classList.remove('done');
-		});
+		const status = document.createElement('p');
+		let todoStatus = '';
+		todo.done ? todoStatus = 'Done':
+					todoStatus = 'Not Done';
 		todo.done ? container.classList.add('done'):
 					container.classList.remove('done');
-		container.appendChild(checkbox);
+		status.innerHTML = 'Status: ' + todoStatus;
+		container.appendChild(status);
 		
 		const todoName = document.createElement('p');
 		todoName.innerHTML = 'Title: ' + todo.title;
@@ -288,6 +284,5 @@ export const renderer = {
 		object.renderSelfTasks = function() {
 			renderer.expandProjectMethod(object);
 		}
-		console.log(object);
     },
 }

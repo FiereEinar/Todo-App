@@ -19,8 +19,8 @@ export const todo = {
     todos: [],
 
     createTodo: (title, dueDate, dueTime, projectType) => {
-        if (title == '' || dueDate == '') {
-            console.log('cancelled');
+        if (title == '' || dueDate == '' || dueTime == '') {
+            alert('Incomplete Data');
             return;
         }
 

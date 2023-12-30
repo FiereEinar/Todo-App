@@ -12,8 +12,8 @@ body {
     display: flex;
     flex-direction: column;
     position: relative;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    min-height: 100vh;
     /* overflow: hidden; */
 }
 
@@ -24,6 +24,7 @@ body {
     width: 100%;
     padding: 20px;
     align-items: center;
+    /* height: 70px; */
 }
 
 .navButton img {
@@ -38,7 +39,7 @@ body {
 
 .contentContainer {
     display: flex;
-    height: 85vh;
+    height: calc(100vh - 70px - 11vh);
 }
 
 
@@ -195,7 +196,7 @@ body {
 
 
 .main {
-    width: 700px;
+    width: 730px;
     color: black;
     padding: 30px;
     position: relative;
@@ -218,8 +219,8 @@ body {
 }
 
 .main > .container > img {
-    width: 20px;
-    height: 20px;
+    width: 25px;
+    height: 25px;
     cursor: pointer;
     padding: 2px;
     border-radius: 5px;
@@ -251,7 +252,7 @@ body {
     position: absolute;
     background-color: #cdcece;
     top: 20px;
-    width: 400px;
+    width: 350px;
     padding: 20px;
     border-radius: 6px;
     border: 1px solid;
@@ -358,25 +359,25 @@ footer a img:hover {
 
 
 
-@media (max-width: 940px) {
+@media (max-width: 960px) {
     .main > .container > p[title="Time"] {
         display: none;
     }
 }
 
-@media (max-width: 860px) {
+@media (max-width: 870px) {
     .main > .container > p[title="Project"] {
         display: none;
     }
 }
 
-@media (max-width: 770px) {
+@media (max-width: 790px) {
     .main > .container > p[title="Due date"] {
         display: none;
     }
 }
 
-@media (max-width: 620px) {
+@media (max-width: 630px) {
     body {
         display: flex;
         flex-direction: column;
@@ -425,7 +426,6 @@ footer a img:hover {
     }
 
     .main {
-        
         width: 100%;
     }
 
@@ -438,4 +438,28 @@ footer a img:hover {
     }
 
     
+}
+
+@media (max-width: 440px) {
+    .main > .expanded {
+        width: 90%;
+        left: 20px;
+    }
+}
+
+@media (max-width: 390px) {
+    .main > .container > p[title="Title"] {
+        width: 150px;
+    }
+
+    .sidebarContainer + .active {
+        width: 90%;
+        left: 20px;
+    }
+}
+
+@media (max-width: 340px) {
+    .main > .container > p[title="Title"] {
+        width: 100px;
+    }
 }
