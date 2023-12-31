@@ -15,8 +15,8 @@ export const projects = {
     projectsList: [],
 
     createProject: (title, dueDate, dueTime, description) => {
-        if (title == '' || description == '') {
-            console.log('cancelled');
+        if (title == '' || dueDate == '' || dueTime == '') {
+            alert('Incomplete Data');
             return;
         }
         const project = new Project(title, dueDate, dueTime, description);

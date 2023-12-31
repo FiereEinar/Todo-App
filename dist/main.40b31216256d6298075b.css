@@ -206,7 +206,7 @@ body {
     flex-wrap: wrap;
     width: 100%;
     justify-content: flex-start;
-    align-items: flex-start;
+    align-items: center;
     gap: 5px;
     border-radius: 5px;
     padding: 2px 5px;  
@@ -223,10 +223,6 @@ body {
     padding: 2px;
     border-radius: 5px;
     justify-self: flex-end;
-}
-
-.main > .container > input {
-    margin-top: 5px;
 }
 
 .main > .container > p {

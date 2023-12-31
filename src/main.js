@@ -2,11 +2,10 @@ import '../src/app.css';
 
 import { pubsub } from './pubsub.js';
 import { todo } from "./todo.js";
-import { renderer } from "./renderer.js";
 import { projects } from './projects.js';
+import { renderer } from "./renderer.js";
 
-import { isFuture } from "date-fns";
-import { isToday } from "date-fns";
+import { isFuture, isToday } from "date-fns";
 
 export const dialogHandler = (() => {
 	const addTaskButton = document.querySelector('.addTaskButton');
@@ -17,6 +16,7 @@ export const dialogHandler = (() => {
     const backButton = document.querySelector('.sidebar > .header img');
     
 	const taskDialog = document.querySelector('.addTaskDialog');
+    const sidebarContainer = document.querySelector('.sidebarContainer');
 	
 	const title = document.querySelector('.addTaskDialog #title');
 	const dueDate = document.querySelector('.addTaskDialog #dueDate');
@@ -25,49 +25,57 @@ export const dialogHandler = (() => {
     const headerText = document.querySelector('.addTaskDialog h1');
     const description = document.querySelector('.description');
     const fieldset = document.querySelector('.addTaskDialog fieldset');
-    const sidebarContainer = document.querySelector('.sidebarContainer');
 
     let mode = '';
     let editedTask; // for editing
 
-    navButton.addEventListener('click', () => {
-        sidebarContainer.classList.add('active');
-    });
+    navButton.addEventListener('click', showSidebar);
+    backButton.addEventListener('click', hideSidebar);
+    sidebarContainer.addEventListener('click', hideSidebar);
+    addTaskButton.addEventListener('click', showTaskDialog);
+    addProjectButton.addEventListener('click', showProjectDialog);
+    closeDialogButton.addEventListener('click', closeDialog);
+    submitDialogButton.addEventListener('click', submitDialog);
 
-    backButton.addEventListener('click', () => {
-        sidebarContainer.classList.remove('active');
-    });
+    function showTaskDialog(projectTitle) {
+        mode = 'task';
+        headerText.innerHTML = 'Add Task';
 
-    sidebarContainer.addEventListener('click', () => {
-        sidebarContainer.classList.remove('active');
-    });
+        showDialogProjects();
+        setSelectedAttribute(projectTitle);
+        showDialog();
+    }
 
-    addTaskButton.addEventListener('click', () => {
-        showTaskDialog();
-    });
-
-    addProjectButton.addEventListener('click', () => {
+    function showProjectDialog() {
         mode = 'project';
-
         headerText.innerHTML = 'Add Project';
+
         addDescription(description);
         showDialog();
-    })
-    
-    closeDialogButton.addEventListener('click', () => {
-        clearDescription();
+    }
+
+    function closeDialog() {
+        clearChildElements(description);
         clearChildElements(fieldset);
         clearDialog();
         hideDialog();
-    });
-    
-    submitDialogButton.addEventListener('click', () => {
+    }
+
+    function submitDialog() {
         analyzeMode();
         clearChildElements(fieldset);
         clearChildElements(description);
         clearDialog();
         hideDialog();
-    });
+    }
+
+    function showSidebar() {
+        sidebarContainer.classList.add('active');
+    }
+
+    function hideSidebar() {
+        sidebarContainer.classList.remove('active');
+    }
 
     function analyzeMode() {
         switch (mode) {
@@ -136,14 +144,6 @@ export const dialogHandler = (() => {
         dueTime.value = '';
     }
 
-    function clearDescription() {
-        const nodes = description.querySelectorAll('label, textarea');
-
-        if (nodes != null) {
-            nodes.forEach((node) => node.remove());
-        }
-    }
-
     function addDescription(parent) {
         const label = document.createElement('label');
         label.setAttribute('for', 'description');
@@ -161,14 +161,6 @@ export const dialogHandler = (() => {
 
     function hideDialog() {
         taskDialog.classList.remove('active');
-    }
-
-    function showTaskDialog(projectTitle) {
-        mode = 'task';
-        headerText.innerHTML = 'Add Task';
-        showDialogProjects();
-        setSelectedAttribute(projectTitle);
-        showDialog();
     }
 
     function showDialogProjects() {
@@ -255,7 +247,7 @@ const localStorageHandler = (() => {
     }
 })();
 
-const UIManager = (() => {
+export const UIManager = (() => {
 	const tasksButton = document.querySelector('.tasksButton');
     const container = document.querySelector('.main');
     const projectsContainer = document.querySelector('.projectsContainer');
@@ -272,11 +264,9 @@ const UIManager = (() => {
     pubsub.subscribe('todoStatusChanged', projects.updateTaskStatusFromProjects);
     pubsub.subscribe('todoStatusChanged', todo.updateTodoStatusInTasks);
 
-	tasksButton.addEventListener('click', () => renderAllTasks());
-
-    todayButton.addEventListener('click', () => renderTasksToday());
-
-    upcomingButton.addEventListener('click', () => renderUpcomingTasks());
+	tasksButton.addEventListener('click', renderAllTasks);
+    todayButton.addEventListener('click', renderTasksToday);
+    upcomingButton.addEventListener('click', renderUpcomingTasks);
 
     init();
     
@@ -304,19 +294,6 @@ const UIManager = (() => {
         }
     }
 
-    function findOpenedProject(data) {
-        data.map((project) => {
-            if (project.title == container.id) {
-                renderer.addRenderingMethod(project);
-                project.renderSelfTasks();
-            }
-        });
-    }
-
-    function setMainId(newId) {
-        container.id = newId;
-    }
-
     function renderAllTasks() {
         setMainId('Tasks');
         const list = todo.getTodo();
@@ -335,6 +312,19 @@ const UIManager = (() => {
         const list = todo.getTodo();
         const upcomingTasks = filterUpcomingTasks(list);
         renderTask(upcomingTasks);
+    }
+
+    function findOpenedProject(data) {
+        data.map((project) => {
+            if (project.title == container.id) {
+                renderer.addRenderingMethod(project);
+                project.renderSelfTasks();
+            }
+        });
+    }
+
+    function setMainId(newId) {
+        container.id = newId;
     }
 
     function filterTodayTasks(list) {
@@ -377,5 +367,9 @@ const UIManager = (() => {
             prev.forEach((element) => element.remove());
         }
 	}
+
+    return {
+        renderAllTasks: renderAllTasks,
+    }
 })();
 

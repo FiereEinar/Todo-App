@@ -1,5 +1,4 @@
-import { pubsub } from "./pubsub.js";
-import { dialogHandler } from "./main.js";
+import { UIManager, dialogHandler } from "./main.js";
 import { projects } from "./projects.js";
 
 import editImg from '../src/assets/edit.png';
@@ -227,6 +226,7 @@ export const renderer = {
 
 		deleteTask.addEventListener('click', () => {
 			projects.deleteProject(project);
+			UIManager.renderAllTasks();
 		});
 
 		const description = document.createElement('h5');
